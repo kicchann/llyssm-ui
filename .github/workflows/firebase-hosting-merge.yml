@@ -14,17 +14,9 @@ jobs:
       - uses: actions/checkout@v4
       # ローカル環境と同じバージョンを指定
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
-      # node_modules のキャッシュ
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       # 依存関係のインストールとビルド
       - run: npm ci && npm run build
       # Firebase Hosting へのデプロイ
