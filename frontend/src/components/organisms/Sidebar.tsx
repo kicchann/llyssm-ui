@@ -43,7 +43,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     <SidebarWrapper>
       <SidebarContainer
         className={isOpen ? 'open' : 'closed'}
-        aria-expanded={isOpen}
         aria-hidden={!isOpen}
         role="region"
       >

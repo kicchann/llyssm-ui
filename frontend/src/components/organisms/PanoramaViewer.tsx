@@ -68,25 +68,25 @@ export const PanoramaViewer: React.FC = () => {
         viewerInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [initializeViewer, viewerInstanceRef]);
 
   // Layer が変更された時はmapPluginの更新
   // 監視対象: selectedLayerId
   useEffect(() => {
     handleLayerChange(selectedLayerId);
-  }, [selectedLayerId]);
+  }, [selectedLayerId, handleLayerChange]);
 
   // Sphere が変更された時の処理
   // 監視対象: selectedSphereId
   useEffect(() => {
     handleSphereChange(selectedSphereId);
-  }, [selectedSphereId]);
+  }, [selectedSphereId, handleSphereChange]);
 
   // Marker が変更された時の処理
   // 監視対象: selectedMarkerId
   useEffect(() => {
     handleMarkerChange(selectedMarkerId);
-  }, [selectedMarkerId]);
+  }, [selectedMarkerId, handleMarkerChange]);
 
   return (
     <Box

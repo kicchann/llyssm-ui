@@ -113,6 +113,7 @@ export const PanoramaViewerViewModel = () => {
       const hoveredMarker = markerDataList.find(
         (_marker) => _marker.id === marker.id
       );
+      if (!hoveredMarker) return;
       dispatch(selectHoveredMarkerId(marker.id));
     });
 
