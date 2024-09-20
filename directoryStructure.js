@@ -35,7 +35,7 @@ function getDirectoryStructure(dir, depth = 0) {
 
 // ディレクトリ構造を取得して output.txt に書き込み
 const rootDir = '.'; // ここに対象ディレクトリのパスを指定（例: './my-folder'）
-const outputFilePath = 'output.txt';
+const outputFilePath = 'dir.txt';
 
 const directoryStructure = getDirectoryStructure(rootDir);
 fs.writeFileSync(outputFilePath, directoryStructure);
