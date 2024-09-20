@@ -1,20 +1,21 @@
 # ベースイメージの指定
 FROM node:18-alpine
 
+# Firebase CLI をインストール
+RUN npm install -g firebase-tools
+
 # 作業ディレクトリの設定
 WORKDIR /app
 
-# パッケージファイルのコピー
-COPY package.json ./
-
-# 依存関係のインストール
+# 依存関係をインストール
+COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 
 # アプリケーションのソースコードをコピー
 COPY . .
 
 # アプリケーションをビルド
-# RUN npm run build
+RUN npm run build
 
 # ポートの公開
 EXPOSE 3000
