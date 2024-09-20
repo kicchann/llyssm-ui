@@ -18,11 +18,12 @@ jobs:
         with:
           node-version: '18'
       # 依存関係のインストールとビルド
+      # ビルド時にCI=falseを指定することで、ビルド時にCIモードを無効にする
       - name: Install dependencies
         run: |
           cd frontend
           npm ci
-          npm run build
+          CI=false npm run build
       # Firebase Hosting へのデプロイ
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

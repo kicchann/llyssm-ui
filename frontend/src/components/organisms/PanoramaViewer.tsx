@@ -24,6 +24,10 @@ export const PanoramaViewer: React.FC = () => {
     handleLayerChange,
     handleMarkerChange,
   } = PanoramaViewerViewModel();
+  const layerDataList = useSelector(
+    (state: RootState) => state.viewer.layerDataList
+  );
+
   const selectedLayerId = useSelector(
     (state: RootState) => state.viewer.selectedLayerId
   );
@@ -47,7 +51,7 @@ export const PanoramaViewer: React.FC = () => {
   });
 
   // ビューアの初期化
-  // 監視対象: layerDataList, sphereDataList, markerDataList
+  // 監視対象: layerDataList
   useEffect(() => {
     initializeViewer();
 
@@ -68,25 +72,25 @@ export const PanoramaViewer: React.FC = () => {
         viewerInstanceRef.current = null;
       }
     };
-  }, [initializeViewer, viewerInstanceRef]);
+  }, [layerDataList]);
 
   // Layer が変更された時はmapPluginの更新
   // 監視対象: selectedLayerId
   useEffect(() => {
     handleLayerChange(selectedLayerId);
-  }, [selectedLayerId, handleLayerChange]);
+  }, [selectedLayerId]);
 
   // Sphere が変更された時の処理
   // 監視対象: selectedSphereId
   useEffect(() => {
     handleSphereChange(selectedSphereId);
-  }, [selectedSphereId, handleSphereChange]);
+  }, [selectedSphereId]);
 
   // Marker が変更された時の処理
   // 監視対象: selectedMarkerId
   useEffect(() => {
     handleMarkerChange(selectedMarkerId);
-  }, [selectedMarkerId, handleMarkerChange]);
+  }, [selectedMarkerId]);
 
   return (
     <Box
