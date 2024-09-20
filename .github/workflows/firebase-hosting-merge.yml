@@ -30,3 +30,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LYSSM_3A50E }}
           channelId: live
           projectId: lyssm-3a50e
+          entryPoint: frontend  # frontendディレクトリを指定
+          expires: 7d # このプレビューチャネルは 7 日後に期限切れになる
