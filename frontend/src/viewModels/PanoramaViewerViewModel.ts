@@ -60,8 +60,7 @@ export const PanoramaViewerViewModel = () => {
       container: viewerRef.current,
       panorama: '',
       caption: '',
-      loadingImg:
-        'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
+      loadingImg: '/images/load-37_256.gif',
       touchmoveTwoFingers: false,
       mousewheelCtrlKey: true,
       navbar: isDesktop ? 'zoom caption' : 'caption',
@@ -149,7 +148,7 @@ export const PanoramaViewerViewModel = () => {
       markersPlugin.addMarker({
         id: sphere.sphereData.id,
         position: { yaw, pitch },
-        image: '/images/icons8-360-60.png',
+        image: '/images/marker-pano.png',
         size: { width: size, height: size },
         anchor: 'bottom center',
         tooltip: sphere.sphereData.name,
@@ -194,8 +193,8 @@ export const PanoramaViewerViewModel = () => {
           id: sphere.id,
           x: sphere.position.x,
           y: sphere.position.y,
-          image:
-            'https://photo-sphere-viewer-data.netlify.app/assets/pictos/pin-red.png',
+          image: '/images/marker-pano.png',
+          size: 20,
         }))
     );
   };

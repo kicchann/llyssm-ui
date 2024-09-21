@@ -70,7 +70,7 @@ export const LayerViewer: React.FC = () => {
                 onClick={() => handleSphereClick(sphere.id)}
               >
                 <img
-                  src="/images/icons8-360-60.png"
+                  src="/images/marker-pano.png"
                   alt="Sphere Pin"
                   style={{ width: '24px', height: '24px' }}
                 />
