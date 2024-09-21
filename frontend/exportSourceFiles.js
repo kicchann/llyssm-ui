@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// 指定されたディレクトリだけ許可する
+const allowedDirs = ['molecules', 'organisms', 'templates']; // 許可するディレクトリ名
+
 // 指定したディレクトリ配下の.tsおよび.tsxファイルを再帰的に取得
 function getTsFiles(dirPath, arrayOfFiles) {
   const files = fs.readdirSync(dirPath);
@@ -8,10 +11,17 @@ function getTsFiles(dirPath, arrayOfFiles) {
   arrayOfFiles = arrayOfFiles || [];
 
   files.forEach((file) => {
-    if (fs.statSync(path.join(dirPath, file)).isDirectory()) {
-      arrayOfFiles = getTsFiles(path.join(dirPath, file), arrayOfFiles);
+    const fullPath = path.join(dirPath, file);
+    const stat = fs.statSync(fullPath);
+
+    // ディレクトリかどうかをチェック
+    if (stat.isDirectory()) {
+      // 許可されたディレクトリのみ再帰的に処理
+      if (allowedDirs.includes(path.basename(fullPath))) {
+        arrayOfFiles = getTsFiles(fullPath, arrayOfFiles);
+      }
     } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-      arrayOfFiles.push(path.join(dirPath, file));
+      arrayOfFiles.push(fullPath);
     }
   });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SidebarTree } from './SidebarTree';
+import { TreeList } from './TreeList';
 
 const SidebarWrapper = styled.div`
   display: flex;
@@ -46,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         aria-hidden={!isOpen}
         role="region"
       >
-        <SidebarTree />
+        <TreeList />
       </SidebarContainer>
     </SidebarWrapper>
   );

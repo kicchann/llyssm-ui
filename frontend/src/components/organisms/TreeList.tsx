@@ -13,7 +13,7 @@ const StyledSimpleTreeView = styled(SimpleTreeView)({
   },
 });
 
-export const SidebarTree: React.FC = () => {
+export const TreeList: React.FC = () => {
   const { handleItemClick } = useSidebarTreeViewModel();
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
@@ -41,7 +41,7 @@ export const SidebarTree: React.FC = () => {
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ minHeight: 352, minWidth: 600 }}>
+      <Box sx={{ minHeight: 352, minWidth: 300 }}>
         <StyledSimpleTreeView
           onItemClick={handleItemClick}
           sx={{ bgcolor: 'transparent' }}

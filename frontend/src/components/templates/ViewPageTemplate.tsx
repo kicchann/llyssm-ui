@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { useFetchLayers } from '../../hooks/useFetchLayers';
 import { useFetchMarkers } from '../../hooks/useFetchMarkers';
 import { useFetchSpheres } from '../../hooks/useFetchSpheres';
+import { mediaQuery, useMediaQuery } from '../../hooks/useMediaQuery';
 import { RootState } from '../../store/store';
+import { CompactHeader } from '../organisms/CompactHeader';
 import { Header } from '../organisms/Header';
 import { Sidebar } from '../organisms/Sidebar';
 
@@ -26,6 +28,7 @@ interface ViewPageTemplateProps {
 export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   content,
 }) => {
+  const isSp = useMediaQuery(mediaQuery.sp);
   const isSidebarOpen = useSelector(
     (state: RootState) => state.viewer.isSidebarOpen
   );
@@ -35,13 +38,19 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   useFetchSpheres(); // 修正箇所
   useFetchMarkers(); // 修正箇所
 
-  return (
+  return isSp ? (
+    <Layout>
+      <CompactHeader />
+      <div style={{ display: 'flex', height: '100%' }}>
+        <Content>{content}</Content>
+      </div>
+    </Layout>
+  ) : (
     <Layout>
       <Header />
       <div style={{ display: 'flex', height: '100%' }}>
         {/* サイドバー */}
-        <Sidebar isOpen={isSidebarOpen} />
-
+        {<Sidebar isOpen={isSidebarOpen} />}
         {/* メインコンテンツ */}
         <Content>{content}</Content>
       </div>
