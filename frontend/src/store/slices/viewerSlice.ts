@@ -17,7 +17,7 @@ interface ViewerState {
 
 const initialState: ViewerState = {
   isLoading: false,
-  isSidebarOpen: true,
+  isSidebarOpen: false,
   isAuthenticated: false,
   selectedLayerId: null,
   lastSelectedSphereId: null,

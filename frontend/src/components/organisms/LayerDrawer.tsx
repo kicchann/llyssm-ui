@@ -4,7 +4,7 @@ import { Box, Drawer, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import { TreeList } from './TreeList'; // TreeListのインポート
 
-export const LayerMenu: React.FC = () => {
+export const LayerDrawer: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = (open: boolean) => () => {

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useFetchLayers } from '../../hooks/useFetchLayers';
 import { useFetchMarkers } from '../../hooks/useFetchMarkers';
 import { useFetchSpheres } from '../../hooks/useFetchSpheres';
-import { mediaQuery, useMediaQuery } from '../../hooks/useMediaQuery';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { RootState } from '../../store/store';
 import { CompactHeader } from '../organisms/CompactHeader';
 import { Header } from '../organisms/Header';
@@ -28,7 +28,7 @@ interface ViewPageTemplateProps {
 export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   content,
 }) => {
-  const isSp = useMediaQuery(mediaQuery.sp);
+  const isMobile = useMediaQuery('mobile');
   const isSidebarOpen = useSelector(
     (state: RootState) => state.viewer.isSidebarOpen
   );
@@ -38,7 +38,8 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   useFetchSpheres(); // 修正箇所
   useFetchMarkers(); // 修正箇所
 
-  return isSp ? (
+  return isMobile ? (
+    // スマホの場合
     <Layout>
       <CompactHeader />
       <div style={{ display: 'flex', height: '100%' }}>
@@ -46,6 +47,7 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
       </div>
     </Layout>
   ) : (
+    // PCの場合
     <Layout>
       <Header />
       <div style={{ display: 'flex', height: '100%' }}>

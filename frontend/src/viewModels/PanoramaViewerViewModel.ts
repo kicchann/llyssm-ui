@@ -19,6 +19,7 @@ import {
 import { RootState } from '../store/store';
 import { SphereData } from '../types/map';
 // utils
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { animateToMarker } from '../utils/animationUtils';
 import { getNearestSpheres, getSphereDataRelative } from '../utils/sphereUtils';
 
@@ -28,6 +29,8 @@ export const PanoramaViewerViewModel = () => {
   const viewerInstanceRef = useRef<Viewer | null>(null);
   const mapPluginRef = useRef<MapPlugin | null>(null);
   const markersPluginRef = useRef<MarkersPlugin | null>(null);
+
+  const isDesktop = useMediaQuery('pc');
 
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
@@ -51,17 +54,17 @@ export const PanoramaViewerViewModel = () => {
   // Viewerの初期化
   const initializeViewer = () => {
     if (!viewerRef.current) return;
-    const baseUrl = 'https://photo-sphere-viewer-data.netlify.app/assets/';
 
     // インスタンスの生成
     const viewer = new Viewer({
       container: viewerRef.current,
       panorama: '',
       caption: '',
-      loadingImg: baseUrl + 'loader.gif',
+      loadingImg:
+        'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
       touchmoveTwoFingers: true,
       mousewheelCtrlKey: true,
-      navbar: 'zoom caption',
+      navbar: isDesktop ? 'zoom caption' : 'caption',
       plugins: [
         [MarkersPlugin, {}],
         [
@@ -70,7 +73,7 @@ export const PanoramaViewerViewModel = () => {
             position: 'bottom left',
             rotation: '0deg',
             shape: 'square',
-            size: '300px',
+            size: isDesktop ? '300px' : '150px',
             static: true,
           },
         ],
@@ -81,6 +84,11 @@ export const PanoramaViewerViewModel = () => {
     viewerInstanceRef.current = viewer;
     mapPluginRef.current = viewer.getPlugin<MapPlugin>(MapPlugin);
     markersPluginRef.current = viewer.getPlugin<MarkersPlugin>(MarkersPlugin);
+
+    // デスクトップでない場合は、マップを非表示にする
+    if (!isDesktop) {
+      mapPluginRef.current?.close();
+    }
 
     // ホットスポットクリック時の処理
     mapPluginRef.current?.addEventListener(

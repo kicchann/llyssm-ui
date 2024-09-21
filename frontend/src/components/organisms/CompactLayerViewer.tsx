@@ -5,9 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { selectSphereId } from '../../store/slices/viewerSlice';
 import { RootState } from '../../store/store';
-import { ToggleSidebarButton } from '../atoms/ToggleSidebarButton';
 
-export const LayerViewer: React.FC = () => {
+export const CompactLayerViewer: React.FC = () => {
   const dispatch = useDispatch();
   const selectedLayerId = useSelector(
     (state: RootState) => state.viewer.selectedLayerId
@@ -43,8 +42,6 @@ export const LayerViewer: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
-      {/* トグルボタンを左上に配置 */}
-      <ToggleSidebarButton />
       <TransformWrapper>
         <TransformComponent>
           <img

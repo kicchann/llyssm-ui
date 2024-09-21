@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// 指定されたディレクトリだけ許可する
-const allowedDirs = ['molecules', 'organisms', 'templates']; // 許可するディレクトリ名
+// 許可するトップレベルのディレクトリ
+const allowedDirs = ['src']; // 許可するトップレベルのディレクトリ名
 
-// 指定したディレクトリ配下の.tsおよび.tsxファイルを再帰的に取得
+// 指定したディレクトリ配下の .ts および .tsx ファイルを再帰的に取得
 function getTsFiles(dirPath, arrayOfFiles) {
   const files = fs.readdirSync(dirPath);
 
@@ -14,13 +14,14 @@ function getTsFiles(dirPath, arrayOfFiles) {
     const fullPath = path.join(dirPath, file);
     const stat = fs.statSync(fullPath);
 
-    // ディレクトリかどうかをチェック
+    // ディレクトリの場合
     if (stat.isDirectory()) {
-      // 許可されたディレクトリのみ再帰的に処理
-      if (allowedDirs.includes(path.basename(fullPath))) {
+      // 最初のトップレベルディレクトリが許可されている場合は再帰的に探索
+      if (allowedDirs.some((allowedDir) => dirPath.includes(allowedDir))) {
         arrayOfFiles = getTsFiles(fullPath, arrayOfFiles);
       }
     } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+      // .ts および .tsx ファイルを追加
       arrayOfFiles.push(fullPath);
     }
   });
@@ -28,7 +29,7 @@ function getTsFiles(dirPath, arrayOfFiles) {
   return arrayOfFiles;
 }
 
-// 指定したファイルの内容をoutput.txtに書き出す
+// 指定したファイルの内容を output.txt に書き出す
 function exportToText(outputPath) {
   const srcDir = path.join(__dirname, 'src');
   const tsFiles = getTsFiles(srcDir);

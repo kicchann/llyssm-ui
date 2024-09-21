@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreMenu } from '../molecules/SettingMenu';
-import { LayerMenu } from './LayerMenu';
+import { LayerDrawer } from './LayerDrawer';
 
 export const CompactHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export const CompactHeader: React.FC = () => {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           View Page
         </Typography>
-        <LayerMenu />
+        <LayerDrawer />
         <MoreMenu />
       </Toolbar>
     </AppBar>

@@ -2,16 +2,13 @@ import { Box } from '@mui/material';
 import '@photo-sphere-viewer/core/index.css';
 import '@photo-sphere-viewer/map-plugin/index.css';
 import '@photo-sphere-viewer/markers-plugin/index.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import { Orientation } from '../../types/map';
 import { PanoramaViewerViewModel } from '../../viewModels/PanoramaViewerViewModel';
-import { ToggleSidebarButton } from '../atoms/ToggleSidebarButton';
-import { YawPitchDisplay } from '../atoms/YawPitchDisplay';
 import { MarkerInfo } from '../molecules/MarkerInfo';
 
-export const PanoramaViewer: React.FC = () => {
+export const CompactPanoramaViewer: React.FC = () => {
   const {
     viewerRef,
     viewerInstanceRef,
@@ -38,27 +35,12 @@ export const PanoramaViewer: React.FC = () => {
       (marker) => marker.id === state.viewer.hoveredMarkerId
     )
   );
-  const [currentOrientation, setCurrentOrientation] = useState<Orientation>({
-    yaw: 0.0,
-    pitch: 0.0,
-  });
 
   // ビューアの初期化
   // 監視対象: layerDataList
   useEffect(() => {
     initializeViewer();
 
-    // Yaw と Pitch の更新処理
-    const updateOrientation = () => {
-      const position = viewerInstanceRef.current?.getPosition();
-      if (!position) return;
-      setCurrentOrientation({
-        yaw: (position.yaw * 180) / Math.PI,
-        pitch: (position.pitch * 180) / Math.PI,
-      });
-      requestAnimationFrame(updateOrientation); // Update on each frame
-    };
-    updateOrientation(); // Start updating
     return () => {
       if (viewerInstanceRef.current) {
         viewerInstanceRef.current?.destroy();
@@ -106,15 +88,6 @@ export const PanoramaViewer: React.FC = () => {
             imageUrl={hoveredMarker.imageUrl}
           />
         )}
-
-        {/* yawとpitchを右下に表示 */}
-        <YawPitchDisplay
-          yaw={currentOrientation.yaw}
-          pitch={currentOrientation.pitch}
-        />
-
-        {/* トグルボタンを左上に配置 */}
-        <ToggleSidebarButton />
       </Box>
     </Box>
   );
