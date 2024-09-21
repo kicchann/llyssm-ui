@@ -62,7 +62,7 @@ export const PanoramaViewerViewModel = () => {
       caption: '',
       loadingImg:
         'https://photo-sphere-viewer-data.netlify.app/assets/loader.gif',
-      touchmoveTwoFingers: true,
+      touchmoveTwoFingers: false,
       mousewheelCtrlKey: true,
       navbar: isDesktop ? 'zoom caption' : 'caption',
       plugins: [
