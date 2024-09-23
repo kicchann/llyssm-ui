@@ -10,7 +10,6 @@ const StyledSimpleTreeView = styled(SimpleTreeView)({
   '& .Mui-selected': {
     backgroundColor: 'transparent',
   },
-  bgcolor: 'transparent',
 });
 
 export const TreeList: React.FC = () => {
