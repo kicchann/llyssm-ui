@@ -1,4 +1,3 @@
-import { styled } from '@mui/styles';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import React from 'react';
 
@@ -10,10 +9,6 @@ interface TreeNodeProps {
   isSelected?: boolean;
 }
 
-const StyledTreeItem = styled(TreeItem)(({ color }) => ({
-  color: color || 'black',
-}));
-
 export const TreeNode: React.FC<TreeNodeProps> = ({
   id,
   label,
@@ -22,14 +17,19 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   isSelected,
 }) => {
   return (
-    <StyledTreeItem
+    <TreeItem
       key={id}
       itemId={id}
       label={label}
       onClick={(event) => onItemClick(event, id)}
-      color={isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent'}
+      sx={
+        {
+          backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+          color: 'black',
+        }
+      }
     >
       {children}
-    </StyledTreeItem>
+    </TreeItem>
   );
 };
