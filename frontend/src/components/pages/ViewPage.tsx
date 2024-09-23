@@ -41,13 +41,16 @@ export const ViewPage: React.FC = () => {
     }
   }, [dispatch, layerDataList, selectedLayerId]);
 
-  const ViewerComponent = selectedSphereId
-    ? isMobile
-      ? CompactPanoramaViewer
-      : PanoramaViewer
-    : isMobile
-      ? CompactLayerViewer
-      : LayerViewer;
-
-  return <ViewPageTemplate content={<ViewerComponent />} />;
+  const content = isMobile ? (
+    selectedSphereId ? (
+      <CompactPanoramaViewer />
+    ) : (
+      <CompactLayerViewer />
+    )
+  ) : selectedSphereId ? (
+    <PanoramaViewer />
+  ) : (
+    <LayerViewer />
+  );
+  return <ViewPageTemplate content={content} />;
 };
