@@ -2,28 +2,28 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LayerData, MarkerData, SphereData } from '../../types/map';
 
 interface ViewerState {
-  isLoading: boolean;
-  isSidebarOpen: boolean;
-  isAuthenticated: boolean;
-  selectedLayerId: string | null;
-  lastSelectedSphereId: string | null;
-  selectedSphereId: string | null;
-  selectedMarkerId: string | null;
-  hoveredMarkerId: string | null;
-  layerDataList: LayerData[];
-  sphereDataList: SphereData[];
-  markerDataList: MarkerData[];
+  isAuthenticated: boolean; // 認証済みかどうか
+  isLoading: boolean; // ローディング中かどうか
+  isSidebarOpen: boolean; // サイドバーが開いているかどうか
+  isMarkerModalOpen: boolean; // マーカーモーダルが開いているかどうか
+  selectedLayerId: string | null; // 選択中のレイヤーID
+  lastSelectedSphereId: string | null; // 直前に選択したSphereID
+  selectedSphereId: string | null; // 選択中のSphereID
+  selectedMarkerId: string | null; // 選択中のマーカーID
+  layerDataList: LayerData[]; // レイヤーデータリスト
+  sphereDataList: SphereData[]; // Sphereデータリスト
+  markerDataList: MarkerData[]; // マーカーデータリスト
 }
 
 const initialState: ViewerState = {
+  isAuthenticated: false,
   isLoading: false,
   isSidebarOpen: false,
-  isAuthenticated: false,
+  isMarkerModalOpen: false,
   selectedLayerId: null,
   lastSelectedSphereId: null,
   selectedSphereId: null,
   selectedMarkerId: null,
-  hoveredMarkerId: null,
   layerDataList: [],
   sphereDataList: [],
   markerDataList: [],
@@ -33,14 +33,17 @@ const viewerSlice = createSlice({
   name: 'viewer',
   initialState,
   reducers: {
+    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
     toggleSidebar: (state) => {
       state.isSidebarOpen = !state.isSidebarOpen;
     },
-    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
-      state.isAuthenticated = action.payload;
+    setIsMarkerModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isMarkerModalOpen = action.payload;
     },
     selectLayerId: (state, action: PayloadAction<string | null>) => {
       state.selectedLayerId = action.payload;
@@ -53,9 +56,6 @@ const viewerSlice = createSlice({
     },
     selectMarkerId: (state, action: PayloadAction<string | null>) => {
       state.selectedMarkerId = action.payload;
-    },
-    selectHoveredMarkerId: (state, action: PayloadAction<string | null>) => {
-      state.hoveredMarkerId = action.payload;
     },
     selectLayerDataList: (state, action: PayloadAction<LayerData[]>) => {
       state.layerDataList = action.payload;
@@ -70,14 +70,14 @@ const viewerSlice = createSlice({
 });
 
 export const {
+  setIsAuthenticated,
   setIsLoading,
   toggleSidebar,
-  setIsAuthenticated,
+  setIsMarkerModalOpen,
   selectLayerId,
   selectLastSphereId,
   selectSphereId,
   selectMarkerId,
-  selectHoveredMarkerId,
   selectLayerDataList,
   selectSphereDataList,
   selectMarkerDataList,

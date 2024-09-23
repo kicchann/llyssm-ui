@@ -51,7 +51,7 @@ export const ApiService = {
         sphereId: 'sphere01',
         name: 'Marker Name 01',
         description: 'This is marker 01',
-        orientation: { yaw: 60, pitch: 0 },
+        orientation: { yaw: 0, pitch: 0 },
         imageUrl: '/images/image-800x600.png',
         thumbnailUrl: '/images/image-160x120.png',
         markerType: 'default',
@@ -124,5 +124,12 @@ export const ApiService = {
     return data;
   },
 
+  // async getSignedUrl(fileId: string) {
+  //   const response = await apiClient.get(`/get-signed-url/${fileId}`);
+  //   return response.data.url;
+  // },
+  async getSignedUrl(url: string) {
+    return url;
+  },
   // 他のAPI呼び出しもここに追加
 };

@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { selectLayerId } from '../../store/slices/viewerSlice';
 import { RootState } from '../../store/store';
-import { CompactLayerViewer } from '../organisms/CompactLayerViewer';
-import { CompactPanoramaViewer } from '../organisms/CompactPanoramaViewer';
-import { LayerViewer } from '../organisms/LayerViewer';
-import { PanoramaViewer } from '../organisms/PanoramaViewer';
+import { CompactLayerViewer, LayerViewer } from '../organisms/LayerViewerBase';
+import {
+  CompactPanoramaViewer,
+  PanoramaViewer,
+} from '../organisms/PanoramaViewerBase';
 import { ViewPageTemplate } from '../templates/ViewPageTemplate';
 
 export const ViewPage: React.FC = () => {
@@ -26,7 +27,7 @@ export const ViewPage: React.FC = () => {
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
   );
-  const isMoblie = useMediaQuery('mobile');
+  const isMobile = useMediaQuery('mobile');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -40,17 +41,13 @@ export const ViewPage: React.FC = () => {
     }
   }, [dispatch, layerDataList, selectedLayerId]);
 
-  const content = selectedSphereId ? (
-    isMoblie ? (
-      <CompactPanoramaViewer />
-    ) : (
-      <PanoramaViewer />
-    )
-  ) : isMoblie ? (
-    <CompactLayerViewer />
-  ) : (
-    <LayerViewer />
-  );
+  const ViewerComponent = selectedSphereId
+    ? isMobile
+      ? CompactPanoramaViewer
+      : PanoramaViewer
+    : isMobile
+      ? CompactLayerViewer
+      : LayerViewer;
 
-  return <ViewPageTemplate content={content} />;
+  return <ViewPageTemplate content={<ViewerComponent />} />;
 };

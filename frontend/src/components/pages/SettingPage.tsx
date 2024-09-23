@@ -1,9 +1,18 @@
 import { Box, Button, Typography } from '@mui/material';
+import { styled } from '@mui/styles';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setIsAuthenticated } from '../../store/slices/viewerSlice';
 import { RootState } from '../../store/store';
+
+const StyledBox = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100vh',
+});
 
 export const SettingPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,21 +32,13 @@ export const SettingPage: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-      }}
-    >
+    <StyledBox>
       <Typography variant="h4" sx={{ marginBottom: 2 }}>
         設定ページ
       </Typography>
       <Button variant="contained" color="secondary" onClick={handleLogout}>
         ログアウト
       </Button>
-    </Box>
+    </StyledBox>
   );
 };

@@ -13,6 +13,13 @@ export const getSphereDataRelative = (
   const dx = targetSphere.position.x - selectedSphere.position.x;
   const dy = targetSphere.position.y - selectedSphere.position.y;
   const distance = Math.sqrt(dx ** 2 + dy ** 2);
+  if (distance === 0) {
+    return {
+      sphereData: targetSphere,
+      distance,
+      orientation: { yaw: 0, pitch: 0 },
+    };
+  }
   const orientation: Orientation = {
     yaw: Math.atan2(dx, -dy) * (180 / Math.PI),
     pitch: 0.0 * (180 / Math.PI),
@@ -26,7 +33,12 @@ export const getNearestSpheres = (
   radius: number = 1000
 ): SphereDataRelative[] => {
   // selectedSphereからの距離と方向を計算
-  const sphereDataRelatives: SphereDataRelative[] = spheres.map(
+  const targetSpheres: SphereData[] = spheres.filter(
+    (sphereData) =>
+      sphereData.layerId === selectedSphere.layerId &&
+      sphereData !== selectedSphere
+  );
+  const sphereDataRelatives: SphereDataRelative[] = targetSpheres.map(
     (sphereData) => {
       return getSphereDataRelative(sphereData, selectedSphere);
     }

@@ -1,25 +1,29 @@
+import { styled } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useFetchLayers } from '../../hooks/useFetchLayers';
 import { useFetchMarkers } from '../../hooks/useFetchMarkers';
 import { useFetchSpheres } from '../../hooks/useFetchSpheres';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { RootState } from '../../store/store';
-import { CompactHeader } from '../organisms/CompactHeader';
-import { Header } from '../organisms/Header';
+import { CompactHeader, Header } from '../organisms/HeaderBase';
 import { Sidebar } from '../organisms/Sidebar';
 
-const Layout = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`;
+const Layout = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh',
+});
 
-const Content = styled.main`
-  flex: 1;
-  display: flex;
-`;
+const WholeContent = styled('div')({
+  display: 'flex',
+  height: '100%',
+});
+
+const Content = styled('main')({
+  flex: 1,
+  display: 'flex',
+});
 
 interface ViewPageTemplateProps {
   content: React.ReactNode;
@@ -42,20 +46,20 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
     // スマホの場合
     <Layout>
       <CompactHeader />
-      <div style={{ display: 'flex', height: '100%' }}>
+      <WholeContent>
         <Content>{content}</Content>
-      </div>
+      </WholeContent>
     </Layout>
   ) : (
     // PCの場合
     <Layout>
       <Header />
-      <div style={{ display: 'flex', height: '100%' }}>
+      <WholeContent>
         {/* サイドバー */}
         {<Sidebar isOpen={isSidebarOpen} />}
         {/* メインコンテンツ */}
         <Content>{content}</Content>
-      </div>
+      </WholeContent>
     </Layout>
   );
 };

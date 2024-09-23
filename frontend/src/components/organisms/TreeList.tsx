@@ -2,37 +2,27 @@ import { Box, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 import { useSidebarTreeViewModel } from '../../viewModels/SidebarTreeViewModel';
+import { useTreeListViewModel } from '../../viewModels/TreeListViewModel';
 import { TreeNode } from '../molecules/TreeNode';
 
 const StyledSimpleTreeView = styled(SimpleTreeView)({
   '& .Mui-selected': {
     backgroundColor: 'transparent',
   },
+  bgcolor: 'transparent',
 });
 
 export const TreeList: React.FC = () => {
   const { handleItemClick } = useSidebarTreeViewModel();
-  const layerDataList = useSelector(
-    (state: RootState) => state.viewer.layerDataList
-  );
-  const sphereDataList = useSelector(
-    (state: RootState) => state.viewer.sphereDataList
-  );
-  const markerDataList = useSelector(
-    (state: RootState) => state.viewer.markerDataList
-  );
-  const selectedLayerId = useSelector(
-    (state: RootState) => state.viewer.selectedLayerId
-  );
-  const selectedSphereId = useSelector(
-    (state: RootState) => state.viewer.selectedSphereId
-  );
-  const selectedMarkerId = useSelector(
-    (state: RootState) => state.viewer.selectedMarkerId
-  );
+  const {
+    layerDataList,
+    sphereDataList,
+    markerDataList,
+    selectedLayerId,
+    selectedSphereId,
+    selectedMarkerId,
+  } = useTreeListViewModel();
 
   // layerDataがない場合にnullを返す
   if (layerDataList.length === 0) {
@@ -42,10 +32,7 @@ export const TreeList: React.FC = () => {
   return (
     <Stack spacing={2}>
       <Box sx={{ minHeight: 352, minWidth: 300 }}>
-        <StyledSimpleTreeView
-          onItemClick={handleItemClick}
-          sx={{ bgcolor: 'transparent' }}
-        >
+        <StyledSimpleTreeView onItemClick={handleItemClick}>
           {layerDataList.map((layer) => (
             <TreeNode
               key={layer.id}
@@ -53,7 +40,6 @@ export const TreeList: React.FC = () => {
               label={layer.name}
               isSelected={selectedLayerId === layer.id}
               onItemClick={handleItemClick}
-              level={0}
             >
               {sphereDataList
                 .filter((sphere) => sphere.layerId === layer.id)
@@ -64,7 +50,6 @@ export const TreeList: React.FC = () => {
                     label={sphere.name}
                     isSelected={selectedSphereId === sphere.id}
                     onItemClick={handleItemClick}
-                    level={1}
                   >
                     {markerDataList
                       .filter((marker) => marker.sphereId === sphere.id)
@@ -75,7 +60,6 @@ export const TreeList: React.FC = () => {
                           label={marker.name}
                           isSelected={selectedMarkerId === marker.id}
                           onItemClick={handleItemClick}
-                          level={2}
                         />
                       ))}
                   </TreeNode>

@@ -17,7 +17,7 @@ export const ErrorSnackbar: React.FC<ErrorSnackbarProps> = ({
 }) => {
   return (
     <Snackbar open={open} autoHideDuration={6000} onClose={onClose}>
-      <Alert onClose={onClose} severity="error" sx={{ width: '100%' }}>
+      <Alert onClose={onClose} severity="error">
         {message}
       </Alert>
     </Snackbar>
