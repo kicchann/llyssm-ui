@@ -11,7 +11,7 @@ interface TreeNodeProps {
 }
 
 const StyledTreeItem = styled(TreeItem)(({ color }) => ({
-  color: color,
+  color: color || 'black',
 }));
 
 export const TreeNode: React.FC<TreeNodeProps> = ({
