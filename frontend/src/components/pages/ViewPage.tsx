@@ -1,56 +1,19 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useAuthRedirect } from '../../hooks/useAuthRedirect';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { selectLayerId } from '../../store/slices/viewerSlice';
-import { RootState } from '../../store/store';
-import { CompactLayerViewer, LayerViewer } from '../organisms/LayerViewerBase';
-import {
-  CompactPanoramaViewer,
-  PanoramaViewer,
-} from '../organisms/PanoramaViewerBase';
 import { ViewPageTemplate } from '../templates/ViewPageTemplate';
+import { NotFoundPage } from './NotFoundPage';
 
 export const ViewPage: React.FC = () => {
-  // const { id } = useParams<{ id: string }>(); // URLパラメータからidを取得
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.viewer.isAuthenticated
-  );
-  const selectedSphereId = useSelector(
-    (state: RootState) => state.viewer.selectedSphereId
-  );
-  const selectedLayerId = useSelector(
-    (state: RootState) => state.viewer.selectedLayerId
-  );
-  const layerDataList = useSelector(
-    (state: RootState) => state.viewer.layerDataList
-  );
-  const isMobile = useMediaQuery('mobile');
+  const { id } = useParams<{ id: string }>(); // URLパラメータからidを取得
+  const isDesktop = useMediaQuery('pc');
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+  useAuthRedirect(); // 認証されていない場合はログインページにリダイレクト
 
-  useEffect(() => {
-    if (layerDataList.length > 0 && !selectedLayerId) {
-      dispatch(selectLayerId(layerDataList[0].id));
-    }
-  }, [dispatch, layerDataList, selectedLayerId]);
+  if (!id) {
+    return <NotFoundPage />;
+  }
 
-  const content = isMobile ? (
-    selectedSphereId ? (
-      <CompactPanoramaViewer />
-    ) : (
-      <CompactLayerViewer />
-    )
-  ) : selectedSphereId ? (
-    <PanoramaViewer />
-  ) : (
-    <LayerViewer />
-  );
-  return <ViewPageTemplate content={content} />;
+  return <ViewPageTemplate isDesktop={isDesktop} locationId={id} />;
 };

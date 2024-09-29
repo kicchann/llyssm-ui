@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
-import {
-  selectSphereDataList,
-  setIsLoading,
-} from '../store/slices/viewerSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectSphereDataList } from '../store/slices/viewSlice';
 
 export const useFetchSpheres = () => {
   const dispatch = useDispatch();

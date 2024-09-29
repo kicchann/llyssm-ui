@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
-import { selectLayerDataList, setIsLoading } from '../store/slices/viewerSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectLayerDataList } from '../store/slices/viewSlice';
 
 export const useFetchLayers = () => {
   const dispatch = useDispatch();

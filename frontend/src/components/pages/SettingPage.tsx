@@ -1,10 +1,9 @@
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { setIsAuthenticated } from '../../store/slices/viewerSlice';
-import { RootState } from '../../store/store';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useAuthRedirect } from '../../hooks/useAuthRedirect';
+import { setIsAuthenticated } from '../../store/slices/statusSlice';
 
 const StyledBox = styled(Box)({
   display: 'flex',
@@ -16,16 +15,8 @@ const StyledBox = styled(Box)({
 
 export const SettingPage: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.viewer.isAuthenticated
-  );
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+  useAuthRedirect(); // 認証されていない場合はログインページにリダイレクト
 
   const handleLogout = () => {
     dispatch(setIsAuthenticated(false)); // ログアウト

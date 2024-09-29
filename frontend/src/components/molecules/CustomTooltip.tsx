@@ -45,41 +45,6 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ markerData }) => {
           <StyledText>{markerData.description}</StyledText>
         </StyledContent>
       </StyledWrapper>
-
-      {/* モーダルで詳細を表示 */}
-      {/* <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Typography variant="h4" component="h2" gutterBottom>
-            {markerData.name}
-          </Typography>
-          <img
-            src={markerData.thumbnailUrl}
-            alt={markerData.name}
-            style={{ width: '100%', borderRadius: '8px' }}
-          />
-          <Typography variant="body1" mt={2}>
-            {markerData.description}
-          </Typography>
-          <Button
-            onClick={handleClose}
-            variant="contained"
-            sx={{ marginTop: '20px' }}
-          >
-            閉じる
-          </Button>
-        </Box>
-      </Modal> */}
     </>
   );
 };

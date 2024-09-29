@@ -14,37 +14,38 @@ export interface Orientation {
   pitch: number;
 }
 
-// export interface FacilityMarkerData {
-//   id: string
-//   geoLocation: GeoLocation
-//   name: string
-//   description: string
-//   websiteUrl?: string
-//   iconType?: keyof typeof icons // 文字列（アイコン名）で指定
-// }
+export interface ImageSize {
+  width: number;
+  height: number;
+}
 
-export interface SphereMarkerData {
+export interface LocationData {
+  id: string;
   geoLocation: GeoLocation;
   name: string;
   description: string;
-  iconUrl?: string;
+  iconType: 'default' | 'house';
+  websiteUrl?: string; // Optional
 }
 
 export interface LayerData {
   id: string;
+  locationId: string;
   name: string;
   imageUrl: string;
+  imageSize: ImageSize;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface SphereData {
   id: string;
-  layerId: string;
   name: string;
   imageUrl: string;
   position: Position;
   createdAt: string;
+  layerId?: string; // Optional layerIdがない場合はレイヤー上でなく、地図上に表示
+  geoLocation?: GeoLocation; // Optional
 }
 
 export interface MarkerData {

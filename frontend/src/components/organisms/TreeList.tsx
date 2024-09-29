@@ -2,7 +2,6 @@ import { Box, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import React from 'react';
-import { useSidebarTreeViewModel } from '../../viewModels/SidebarTreeViewModel';
 import { useTreeListViewModel } from '../../viewModels/TreeListViewModel';
 import { TreeNode } from '../molecules/TreeNode';
 
@@ -13,7 +12,6 @@ const StyledSimpleTreeView = styled(SimpleTreeView)({
 });
 
 export const TreeList: React.FC = () => {
-  const { handleItemClick } = useSidebarTreeViewModel();
   const {
     layerDataList,
     sphereDataList,
@@ -21,6 +19,7 @@ export const TreeList: React.FC = () => {
     selectedLayerId,
     selectedSphereId,
     selectedMarkerId,
+    handleItemClick,
   } = useTreeListViewModel();
 
   // layerDataがない場合にnullを返す

@@ -2,10 +2,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LayerData, MarkerData, SphereData } from '../../types/map';
 
 interface ViewerState {
-  isAuthenticated: boolean; // 認証済みかどうか
-  isLoading: boolean; // ローディング中かどうか
-  isSidebarOpen: boolean; // サイドバーが開いているかどうか
-  isMarkerModalOpen: boolean; // マーカーモーダルが開いているかどうか
   selectedLayerId: string | null; // 選択中のレイヤーID
   lastSelectedSphereId: string | null; // 直前に選択したSphereID
   selectedSphereId: string | null; // 選択中のSphereID
@@ -16,10 +12,6 @@ interface ViewerState {
 }
 
 const initialState: ViewerState = {
-  isAuthenticated: false,
-  isLoading: false,
-  isSidebarOpen: false,
-  isMarkerModalOpen: false,
   selectedLayerId: null,
   lastSelectedSphereId: null,
   selectedSphereId: null,
@@ -33,18 +25,6 @@ const viewerSlice = createSlice({
   name: 'viewer',
   initialState,
   reducers: {
-    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
-      state.isAuthenticated = action.payload;
-    },
-    setIsLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
-    toggleSidebar: (state) => {
-      state.isSidebarOpen = !state.isSidebarOpen;
-    },
-    setIsMarkerModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isMarkerModalOpen = action.payload;
-    },
     selectLayerId: (state, action: PayloadAction<string | null>) => {
       state.selectedLayerId = action.payload;
     },
@@ -70,10 +50,6 @@ const viewerSlice = createSlice({
 });
 
 export const {
-  setIsAuthenticated,
-  setIsLoading,
-  toggleSidebar,
-  setIsMarkerModalOpen,
   selectLayerId,
   selectLastSphereId,
   selectSphereId,

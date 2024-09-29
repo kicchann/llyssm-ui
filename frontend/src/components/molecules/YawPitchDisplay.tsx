@@ -22,8 +22,8 @@ export const YawPitchDisplay: React.FC<YawPitchDisplayProps> = ({
 }) => {
   return (
     <StyledBox>
-      <Label text={`Yaw: ${yaw.toFixed(2)}°`} color="white" />
-      <Label text={`Pitch: ${pitch.toFixed(2)}°`} color="white" />
+      <Label text={`Yaw: ${yaw.toFixed(1)}°`} color="white" />
+      <Label text={`Pitch: ${pitch.toFixed(1)}°`} color="white" />
     </StyledBox>
   );
 };

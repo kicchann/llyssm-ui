@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Box, Drawer, IconButton } from '@mui/material';
 import { styled } from '@mui/styles';
 import React, { useState } from 'react';
-import { TreeList } from './TreeList'; // TreeListのインポート
 
 const DrawerBox = styled(Box)({
   width: 300,
@@ -18,7 +17,11 @@ const CloseButtonBox = styled(Box)({
   right: 8,
 });
 
-export const LayerDrawer: React.FC = () => {
+interface DrawerNodeProps {
+  content: React.ReactNode;
+}
+
+export const DrawerNode: React.FC<DrawerNodeProps> = ({ content }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = (open: boolean) => () => {
@@ -41,8 +44,7 @@ export const LayerDrawer: React.FC = () => {
               <CloseIcon />
             </IconButton>
           </CloseButtonBox>
-          {/* TreeListを表示 */}
-          <TreeList />
+          {content}
         </DrawerBox>
       </Drawer>
     </>

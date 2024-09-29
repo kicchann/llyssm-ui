@@ -1,13 +1,24 @@
-import { styled } from '@mui/material';
+// react
 import React from 'react';
-import { useSelector } from 'react-redux';
+// material-ui
+import { styled } from '@mui/material';
+// components
+import { Sidebar } from '../molecules/Sidebar';
+import { CompactHeader, Header } from '../organisms/HeaderBase';
+// hooks
 import { useFetchLayers } from '../../hooks/useFetchLayers';
 import { useFetchMarkers } from '../../hooks/useFetchMarkers';
 import { useFetchSpheres } from '../../hooks/useFetchSpheres';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { RootState } from '../../store/store';
-import { CompactHeader, Header } from '../organisms/HeaderBase';
-import { Sidebar } from '../organisms/Sidebar';
+// store
+import { useViewPageTemplateViewModel } from '../../viewModels/ViewPageTemplateViewModel';
+import { LayerTileGridButton } from '../atoms/LayerTileGridButton';
+import { ToggleSidebarButton } from '../atoms/ToggleSidebarButton';
+import { ModalNode } from '../molecules/ModalNode';
+import { LayerTileGrid } from '../organisms/LayerTileGrid';
+import { LayerViewer } from '../organisms/LayerViewer';
+import { MarkerViewer } from '../organisms/MarkerViewer';
+import { SphereViewer } from '../organisms/SphereViewer';
+import { TreeList } from '../organisms/TreeList';
 
 const Layout = styled('div')({
   display: 'flex',
@@ -15,51 +26,105 @@ const Layout = styled('div')({
   height: '100vh',
 });
 
+//header以外をカバーするコンポーネント
 const WholeContent = styled('div')({
   display: 'flex',
-  height: '100%',
+  flex: 1,
 });
 
 const Content = styled('main')({
   flex: 1,
   display: 'flex',
+  height: '100%',
+  width: '100%',
+});
+
+const OptionalContent = styled('div')({
+  position: 'absolute',
+  top: 10,
+  left: 10,
+  zIndex: 1000,
 });
 
 interface ViewPageTemplateProps {
-  content: React.ReactNode;
+  isDesktop: boolean;
+  locationId: string;
 }
 
 export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
-  content,
+  isDesktop,
+  locationId,
 }) => {
-  const isMobile = useMediaQuery('mobile');
-  const isSidebarOpen = useSelector(
-    (state: RootState) => state.viewer.isSidebarOpen
-  );
+  const {
+    isSidebarOpen,
+    activeModal,
+    selectedSphereId,
+    closeModal,
+    handleToggleSidebar,
+    clearSelection,
+  } = useViewPageTemplateViewModel();
 
   // カスタムフックの使用
   useFetchLayers(); // 修正箇所
   useFetchSpheres(); // 修正箇所
   useFetchMarkers(); // 修正箇所
-
-  return isMobile ? (
-    // スマホの場合
-    <Layout>
-      <CompactHeader />
-      <WholeContent>
-        <Content>{content}</Content>
-      </WholeContent>
-    </Layout>
+  console.log('selectedSphereId:', selectedSphereId);
+  const optionalContent = isDesktop ? (
+    <OptionalContent>
+      <ToggleSidebarButton
+        isSidebarOpen={isSidebarOpen}
+        onToggle={handleToggleSidebar}
+      />
+      <LayerTileGridButton onClick={clearSelection} />
+    </OptionalContent>
   ) : (
+    <OptionalContent>
+      <LayerTileGridButton onClick={clearSelection} />
+    </OptionalContent>
+  );
+  const mainContent = selectedSphereId ? (
+    <SphereViewer isDesktop={isDesktop} optionalContent={optionalContent} />
+  ) : (
+    <LayerTileGrid />
+  );
+  const content: React.ReactNode = isDesktop ? (
     // PCの場合
     <Layout>
+      {/* ヘッダ */}
       <Header />
       <WholeContent>
         {/* サイドバー */}
-        {<Sidebar isOpen={isSidebarOpen} />}
+        <Sidebar isOpen={isSidebarOpen} content={<TreeList />} />
         {/* メインコンテンツ */}
-        <Content>{content}</Content>
+        <Content>{mainContent}</Content>
       </WholeContent>
     </Layout>
+  ) : (
+    <Layout>
+      {/* ヘッダ */}
+      <CompactHeader />
+      <WholeContent>
+        {/* メインコンテンツ */}
+        <Content>{mainContent}</Content>
+      </WholeContent>
+    </Layout>
+  );
+
+  return (
+    <>
+      {content}
+      {/* レイヤーモーダルを表示 */}
+      <ModalNode
+        open={activeModal === 'layer'}
+        onClose={closeModal}
+        content={<LayerViewer />}
+      />
+      {/* マーカーモーダルを表示 */}
+      <ModalNode
+        open={activeModal === 'marker'}
+        onClose={closeModal}
+        content={<MarkerViewer />}
+      />
+    </>
   );
 };

@@ -12,10 +12,6 @@ interface ToggleSidebarButtonProps {
 }
 
 const StyledIconButton = styled(IconButton)({
-  position: 'absolute',
-  top: 10,
-  left: 10,
-  zIndex: 1000,
   backgroundColor: 'rgba(255, 255, 255, 0.5)',
 });
 
@@ -24,7 +20,10 @@ export const ToggleSidebarButton: React.FC<ToggleSidebarButtonProps> = ({
   onToggle,
 }) => {
   return (
-    <StyledIconButton onClick={onToggle}>
+    <StyledIconButton
+      onClick={onToggle}
+      title={isSidebarOpen ? 'サイドバーを閉じる' : 'サイドバーを開く'}
+    >
       {isSidebarOpen ? (
         <KeyboardDoubleArrowLeft />
       ) : (

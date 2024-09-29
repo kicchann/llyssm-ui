@@ -1,24 +1,25 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
+import { selectLocationDataList } from '../store/slices/mapSlice';
 import { setIsLoading } from '../store/slices/statusSlice';
-import { selectMarkerDataList } from '../store/slices/viewSlice';
+import { LocationData } from '../types/map';
 
-export const useFetchMarkers = () => {
+export const useFetchLocations = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setIsLoading(true));
-    const fetchMarkers = async () => {
+    const fetchLocations = async () => {
       try {
-        const data = await ApiService.fetchMarkers();
-        dispatch(selectMarkerDataList(data));
+        const data: LocationData[] = await ApiService.fetchLocations();
+        dispatch(selectLocationDataList(data));
       } catch (error) {
-        console.error('Error fetching markers:', error);
+        console.error('Error fetching Locations:', error);
       } finally {
         dispatch(setIsLoading(false));
       }
     };
-    fetchMarkers();
+    fetchLocations();
   }, [dispatch]);
 };

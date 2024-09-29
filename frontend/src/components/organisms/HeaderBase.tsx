@@ -1,8 +1,9 @@
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
 import React from 'react';
+import { DrawerNode } from '../molecules/DrawerNode';
 import { MoreMenu } from '../molecules/SettingMenu';
-import { LayerDrawer } from './LayerDrawer';
+import { TreeList } from './TreeList';
 
 interface HeaderBaseProps {
   isDesktop: boolean;
@@ -17,7 +18,7 @@ const HeaderBase: React.FC<HeaderBaseProps> = ({ isDesktop }) => {
     <AppBar position="static">
       <Toolbar>
         <StyledTypography variant="h6">View Page</StyledTypography>
-        {!isDesktop && <LayerDrawer />}
+        {!isDesktop && <DrawerNode content={<TreeList />} />}
         <MoreMenu />
       </Toolbar>
     </AppBar>

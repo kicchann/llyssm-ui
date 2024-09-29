@@ -3,7 +3,7 @@ import { Box, Button, styled, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setIsAuthenticated } from '../../store/slices/viewerSlice';
+import { setIsAuthenticated } from '../../store/slices/statusSlice';
 
 const StyledBox = styled(Box)({
   display: 'flex',
@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
       // ログイン成功 (トイモデルなので何もしない)
       setError('');
       dispatch(setIsAuthenticated(true));
-      navigate('/view'); // ログイン成功後、viewページへ移動
+      navigate('/map'); // ログイン成功後、viewページへ移動
     } else {
       setError('無効なメールアドレスまたはパスワードです。');
     }

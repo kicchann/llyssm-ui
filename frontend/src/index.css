@@ -1,5 +1,7 @@
 body {
   margin: 0;
+  /* 100vhにしたときの縦スクロール表示を回避 */
+  /* overflow-y: hidden; 必要に応じて */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;

@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectSphereId, toggleSidebar } from '../store/slices/viewerSlice';
+import { setActiveModal } from '../store/slices/statusSlice';
+import { selectSphereId } from '../store/slices/viewSlice';
 import { RootState } from '../store/store';
 
 export const useLayerViewerViewModel = () => {
@@ -13,9 +14,6 @@ export const useLayerViewerViewModel = () => {
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
   );
-  const isSidebarOpen = useSelector(
-    (state: RootState) => state.viewer.isSidebarOpen
-  );
 
   const selectedLayer = layerDataList.find(
     (layer) => layer.id === selectedLayerId
@@ -24,17 +22,12 @@ export const useLayerViewerViewModel = () => {
   // Sphereのピンをクリックしたときの処理
   const handleSphereClick = (sphereId: string) => {
     dispatch(selectSphereId(sphereId));
-  };
-
-  const handleToggleSidebar = () => {
-    dispatch(toggleSidebar());
+    dispatch(setActiveModal(null));
   };
 
   return {
     selectedLayer,
     sphereDataList,
     handleSphereClick,
-    isSidebarOpen,
-    handleToggleSidebar,
   };
 };

@@ -126,42 +126,191 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ markerData }) => {
           <StyledText>{markerData.description}</StyledText>
         </StyledContent>
       </StyledWrapper>
-
-      {/* モーダルで詳細を表示 */}
-      {/* <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Typography variant="h4" component="h2" gutterBottom>
-            {markerData.name}
-          </Typography>
-          <img
-            src={markerData.thumbnailUrl}
-            alt={markerData.name}
-            style={{ width: '100%', borderRadius: '8px' }}
-          />
-          <Typography variant="body1" mt={2}>
-            {markerData.description}
-          </Typography>
-          <Button
-            onClick={handleClose}
-            variant="contained"
-            sx={{ marginTop: '20px' }}
-          >
-            閉じる
-          </Button>
-        </Box>
-      </Modal> */}
     </>
+  );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/molecules/DrawerNode.tsx ---
+import { Layers } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Drawer, IconButton } from '@mui/material';
+import { styled } from '@mui/styles';
+import React, { useState } from 'react';
+
+const DrawerBox = styled(Box)({
+  width: 300,
+  padding: 16,
+  paddingTop: 48, // 閉じるボタン分のスペースを確保
+  position: 'relative',
+});
+
+const CloseButtonBox = styled(Box)({
+  position: 'absolute',
+  top: 8, // ボタンを右上に固定
+  right: 8,
+});
+
+interface DrawerNodeProps {
+  content: React.ReactNode;
+}
+
+export const DrawerNode: React.FC<DrawerNodeProps> = ({ content }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDrawer = (open: boolean) => () => {
+    setIsOpen(open);
+  };
+
+  return (
+    <>
+      {/* メニューを開くボタン */}
+      <IconButton onClick={toggleDrawer(true)} color="inherit">
+        <Layers />
+      </IconButton>
+
+      {/* 右からスライドするメニュー */}
+      <Drawer anchor="right" open={isOpen} onClose={toggleDrawer(false)}>
+        <DrawerBox role="presentation">
+          {/* 閉じるボタン */}
+          <CloseButtonBox>
+            <IconButton onClick={toggleDrawer(false)}>
+              <CloseIcon />
+            </IconButton>
+          </CloseButtonBox>
+          {content}
+        </DrawerBox>
+      </Drawer>
+    </>
+  );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/molecules/LayerTileGridButton.tsx ---
+import styled from '@emotion/styled';
+import { GridView } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import React from 'react';
+
+interface LayerTileGridButtonProps {
+  onClick?: () => void;
+}
+
+const StyledIconButton = styled(IconButton)({
+  backgroundColor: 'rgba(255, 255, 255, 0.5)',
+});
+
+export const LayerTileGridButton: React.FC<LayerTileGridButtonProps> = ({
+  onClick,
+}) => {
+  return (
+    <StyledIconButton onClick={onClick} title="レイヤー一覧">
+      <GridView />
+    </StyledIconButton>
+  );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/molecules/LocationTooltip.tsx ---
+import { Box } from '@mui/material';
+import 'leaflet/dist/leaflet.css';
+import React from 'react';
+import { Marker, Popup } from 'react-leaflet';
+import { LocationData } from '../../types/map';
+import { getLocationIcon } from '../../utils/mapUtils';
+
+interface LocationTooltipProps {
+  locationData: LocationData;
+  onClick: (event: React.MouseEvent, itemId: string) => void;
+}
+
+export const LocationTooltip: React.FC<LocationTooltipProps> = ({
+  locationData: data,
+  onClick: onPopupClick,
+}) => {
+  return (
+    <Marker
+      position={[data.geoLocation.latitude, data.geoLocation.longitude]}
+      icon={getLocationIcon(data.iconType)}
+    >
+      <Popup>
+        <Box onClick={(event) => onPopupClick(event, data.id)}>
+          <h3>{data.name}</h3>
+          <p>{data.description}</p>
+          <p>クリックで詳細ページへ</p>
+        </Box>
+      </Popup>
+    </Marker>
+  );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/molecules/ModalNode.tsx ---
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, IconButton, Modal } from '@mui/material';
+import { styled } from '@mui/system';
+import React, { useEffect } from 'react';
+
+interface ModalNodeProps {
+  open: boolean;
+  onClose: () => void;
+  content: React.ReactNode;
+}
+
+const StyledModalBox = styled(Box)({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '85%',
+  maxWidth: '800px',
+  bgcolor: 'rgba(0, 0, 0, 0.2)',
+  p: 1,
+  maxHeight: '90vh',
+  overflowY: 'auto',
+  paddingTop: 36, // 閉じるボタン分のスペースを確保
+});
+
+const StyledIconButton = styled(IconButton)({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  color: 'white',
+});
+
+export const ModalNode: React.FC<ModalNodeProps> = ({
+  open,
+  onClose,
+  content,
+}) => {
+  // ESCキーでモーダルを閉じる
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose]);
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="marker-modal-title"
+      aria-describedby="marker-modal-description"
+    >
+      <StyledModalBox>
+        <StyledIconButton onClick={onClose}>
+          <CloseIcon />
+        </StyledIconButton>
+        {content}
+      </StyledModalBox>
+    </Modal>
   );
 };
 
@@ -192,6 +341,44 @@ export const MoreMenu: React.FC = () => {
 };
 
 
+--- /workspaces/lyssm-ui/frontend/src/components/molecules/Sidebar.tsx ---
+// import styled from 'styled-components';
+import { styled } from '@mui/system';
+
+const SidebarWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  position: 'relative',
+});
+
+const SidebarContainer = styled('div')<{ isOpen: boolean }>(({ isOpen }) => ({
+  overflowY: 'auto',
+  backgroundColor: '#fff',
+  transition: 'width 0.3s ease, padding 0.3s ease',
+  boxShadow: isOpen ? '2px 0 5px rgba(0, 0, 0, 0.1)' : 'none',
+  width: isOpen ? 'var(--sidebar-width, 300px)' : '0',
+  padding: isOpen ? '10px' : '0',
+  '@media (max-width: 768px)': {
+    width: isOpen ? '100%' : '0',
+  },
+}));
+
+interface SidebarProps {
+  isOpen: boolean;
+  content: React.ReactNode;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, content }) => {
+  return (
+    <SidebarWrapper>
+      <SidebarContainer isOpen={isOpen} aria-hidden={!isOpen} role="region">
+        {content}
+      </SidebarContainer>
+    </SidebarWrapper>
+  );
+};
+
+
 --- /workspaces/lyssm-ui/frontend/src/components/molecules/ToggleSidebarButton.tsx ---
 import styled from '@emotion/styled';
 import {
@@ -207,10 +394,6 @@ interface ToggleSidebarButtonProps {
 }
 
 const StyledIconButton = styled(IconButton)({
-  position: 'absolute',
-  top: 10,
-  left: 10,
-  zIndex: 1000,
   backgroundColor: 'rgba(255, 255, 255, 0.5)',
 });
 
@@ -231,7 +414,6 @@ export const ToggleSidebarButton: React.FC<ToggleSidebarButtonProps> = ({
 
 
 --- /workspaces/lyssm-ui/frontend/src/components/molecules/TreeNode.tsx ---
-import { styled } from '@mui/styles';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import React from 'react';
 
@@ -243,10 +425,6 @@ interface TreeNodeProps {
   isSelected?: boolean;
 }
 
-const StyledTreeItem = styled(TreeItem)(({ color }) => ({
-  color: color,
-}));
-
 export const TreeNode: React.FC<TreeNodeProps> = ({
   id,
   label,
@@ -255,15 +433,20 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   isSelected,
 }) => {
   return (
-    <StyledTreeItem
+    <TreeItem
       key={id}
       itemId={id}
       label={label}
       onClick={(event) => onItemClick(event, id)}
-      color={isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent'}
+      sx={
+        {
+          backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+          color: 'black',
+        }
+      }
     >
       {children}
-    </StyledTreeItem>
+    </TreeItem>
   );
 };
 
@@ -293,8 +476,8 @@ export const YawPitchDisplay: React.FC<YawPitchDisplayProps> = ({
 }) => {
   return (
     <StyledBox>
-      <Label text={`Yaw: ${yaw.toFixed(2)}°`} color="white" />
-      <Label text={`Pitch: ${pitch.toFixed(2)}°`} color="white" />
+      <Label text={`Yaw: ${yaw.toFixed(1)}°`} color="white" />
+      <Label text={`Pitch: ${pitch.toFixed(1)}°`} color="white" />
     </StyledBox>
   );
 };
@@ -304,8 +487,9 @@ export const YawPitchDisplay: React.FC<YawPitchDisplayProps> = ({
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
 import React from 'react';
+import { DrawerNode } from '../molecules/DrawerNode';
 import { MoreMenu } from '../molecules/SettingMenu';
-import { LayerDrawer } from './LayerDrawer';
+import { TreeList } from './TreeList';
 
 interface HeaderBaseProps {
   isDesktop: boolean;
@@ -320,7 +504,7 @@ const HeaderBase: React.FC<HeaderBaseProps> = ({ isDesktop }) => {
     <AppBar position="static">
       <Toolbar>
         <StyledTypography variant="h6">View Page</StyledTypography>
-        {!isDesktop && <LayerDrawer />}
+        {!isDesktop && <DrawerNode content={<TreeList />} />}
         <MoreMenu />
       </Toolbar>
     </AppBar>
@@ -331,78 +515,52 @@ export const Header: React.FC = () => <HeaderBase isDesktop={true} />;
 export const CompactHeader: React.FC = () => <HeaderBase isDesktop={false} />;
 
 
---- /workspaces/lyssm-ui/frontend/src/components/organisms/LayerDrawer.tsx ---
-import { Layers } from '@mui/icons-material';
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, Drawer, IconButton } from '@mui/material';
-import { styled } from '@mui/styles';
-import React, { useState } from 'react';
-import { TreeList } from './TreeList'; // TreeListのインポート
+--- /workspaces/lyssm-ui/frontend/src/components/organisms/LayerTileGrid.tsx ---
+import { Card, CardContent, CardMedia, Grid2, Typography } from '@mui/material';
+import React from 'react';
+import { useLayerTileGridViewModel } from '../../viewModels/LayerTileGridViewModel';
 
-const DrawerBox = styled(Box)({
-  width: 300,
-  padding: 16,
-  paddingTop: 48, // 閉じるボタン分のスペースを確保
-  position: 'relative',
-});
-
-const CloseButtonBox = styled(Box)({
-  position: 'absolute',
-  top: 8, // ボタンを右上に固定
-  right: 8,
-});
-
-export const LayerDrawer: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDrawer = (open: boolean) => () => {
-    setIsOpen(open);
-  };
-
+export const LayerTileGrid: React.FC = () => {
+  const { layerDataList, handleLayerClick } = useLayerTileGridViewModel();
   return (
-    <>
-      {/* メニューを開くボタン */}
-      <IconButton onClick={toggleDrawer(true)} color="inherit">
-        <Layers />
-      </IconButton>
-
-      {/* 右からスライドするメニュー */}
-      <Drawer anchor="right" open={isOpen} onClose={toggleDrawer(false)}>
-        <DrawerBox role="presentation">
-          {/* 閉じるボタン */}
-          <CloseButtonBox>
-            <IconButton onClick={toggleDrawer(false)}>
-              <CloseIcon />
-            </IconButton>
-          </CloseButtonBox>
-          {/* TreeListを表示 */}
-          <TreeList />
-        </DrawerBox>
-      </Drawer>
-    </>
+    <Grid2
+      container
+      spacing={{ xs: 2, md: 3 }}
+      columns={{ xs: 4, sm: 8, md: 12 }}
+      padding={2}
+    >
+      {layerDataList.map((layer) => (
+        <Grid2 key={layer.id}>
+          <Card
+            onClick={() => handleLayerClick(layer.id)}
+            sx={{ cursor: 'pointer' }}
+          >
+            <CardMedia
+              component="img"
+              height="140"
+              image={layer.imageUrl} // imageUrlを表示
+              alt={layer.name}
+            />
+            <CardContent>
+              <Typography variant="h6">{layer.name}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {`Size: ${layer.imageSize.width}x${layer.imageSize.height}`}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid2>
+      ))}
+    </Grid2>
   );
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/components/organisms/LayerViewerBase.tsx ---
-// /workspaces/malaspherer-ui/frontend/src/components/organisms/LayerViewer.tsx
+--- /workspaces/lyssm-ui/frontend/src/components/organisms/LayerViewer.tsx ---
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { useLayerViewerViewModel } from '../../viewModels/LayerViewerViewModel';
-import { ToggleSidebarButton } from '../molecules/ToggleSidebarButton';
-
-interface LayerViewerBaseProps {
-  isDesktop: boolean;
-}
-
-const StyledWholeBox = styled(Box)({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-});
 
 const StyledCenterBox = styled(Box)({
   position: 'relative',
@@ -423,117 +581,121 @@ const StyledSpherePinBox = styled(Box)({
 const StyledMainImg = styled('img')({
   width: '100%',
   height: '100%',
+  objectFit: 'contain',
+  cursor: 'grab',
 });
 
-const LayerViewerBase: React.FC<LayerViewerBaseProps> = ({ isDesktop }) => {
-  const {
-    selectedLayer,
-    sphereDataList,
-    handleSphereClick,
-    isSidebarOpen,
-    handleToggleSidebar,
-  } = useLayerViewerViewModel();
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [imageSize, setImageSize] = useState({ width: 1, height: 1 });
+const wrapperProps = {
+  disabled: false,
+  initialScale: 1,
+  doubleClick: { mode: 'reset' as 'reset' }, //excluded: [], step: 0.7
+  panning: { disabled: false, activationKeys: [], excluded: [] },
+  pinch: { excluded: [], step: 5 },
+  wheel: { activationKeys: [], excluded: [], smoothStep: 0.001, step: 0.2 },
+};
 
-  useEffect(() => {
-    if (imageRef.current) {
-      const { naturalWidth, naturalHeight } = imageRef.current;
-      setImageSize({ width: naturalWidth, height: naturalHeight });
-    }
-  }, [selectedLayer]);
+export const LayerViewer: React.FC = () => {
+  const { selectedLayer, sphereDataList, handleSphereClick } =
+    useLayerViewerViewModel();
+  const imageRef = useRef<HTMLImageElement>(null);
 
   if (!selectedLayer) {
     return <div>No layer selected</div>;
   }
 
   return (
-    <StyledWholeBox>
-      {/*
-      トグルボタンを左上に配置
-      画面が小さい場合はサイドバーを用いないので、表示しない
-      */}
-      {isDesktop && (
-        <ToggleSidebarButton
-          isSidebarOpen={isSidebarOpen}
-          onToggle={handleToggleSidebar}
-        />
-      )}
-      <StyledCenterBox>
-        <TransformWrapper>
-          <TransformComponent>
-            <StyledMainImg
-              ref={imageRef}
-              src={selectedLayer.imageUrl}
-              alt={selectedLayer.name}
-            />
-            {/* Sphereのピンを配置 */}
-            {sphereDataList
-              .filter((sphere) => sphere.layerId === selectedLayer.id)
-              .map((sphere) => (
-                <StyledSpherePinBox
-                  key={sphere.id}
-                  title={sphere.name}
-                  onClick={() => handleSphereClick(sphere.id)}
-                  sx={{
-                    top: `${(sphere.position.y / imageSize.height) * 100}%`,
-                    left: `${(sphere.position.x / imageSize.width) * 100}%`,
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src="/images/marker-pano.png"
-                    alt="Sphere Pin"
-                    sx={{ width: '24px', height: '24px' }}
-                  />
-                </StyledSpherePinBox>
-              ))}
-          </TransformComponent>
-        </TransformWrapper>
-      </StyledCenterBox>
-    </StyledWholeBox>
+    <StyledCenterBox>
+      <TransformWrapper {...wrapperProps}>
+        <TransformComponent>
+          <StyledMainImg
+            ref={imageRef}
+            src={selectedLayer.imageUrl}
+            alt={selectedLayer.name}
+          />
+          {/* Sphereのピンを配置 */}
+          {sphereDataList
+            .filter((sphere) => sphere.layerId === selectedLayer.id)
+            .map((sphere) => (
+              <StyledSpherePinBox
+                key={sphere.id}
+                title={sphere.name}
+                onClick={() => handleSphereClick(sphere.id)}
+                sx={{
+                  top: `${(sphere.position.y / selectedLayer.imageSize.height) * 100}%`,
+                  left: `${(sphere.position.x / selectedLayer.imageSize.width) * 100}%`,
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/images/marker-pano.png"
+                  alt="Sphere Pin"
+                  sx={{ width: '24px', height: '24px' }}
+                />
+              </StyledSpherePinBox>
+            ))}
+        </TransformComponent>
+      </TransformWrapper>
+    </StyledCenterBox>
   );
 };
 
-// export const CompactPanoramaViewer = () => (
-//   <PanoramaViewerBase isDesktop={false} />
-// );
-// export const PanoramaViewer = () => <PanoramaViewerBase isDesktop={true} />;
 
-export const LayerViewer: React.FC = () => <LayerViewerBase isDesktop={true} />;
-export const CompactLayerViewer: React.FC = () => (
-  <LayerViewerBase isDesktop={false} />
-);
+--- /workspaces/lyssm-ui/frontend/src/components/organisms/LocationViewer.tsx ---
+import React from 'react';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import styled from 'styled-components';
+import { GeoLocation } from '../../types/map';
+import { useLocationViewerViewModel } from '../../viewModels/LocationViewerViewModel';
+import { LocationTooltip } from '../molecules/LocationTooltip';
+
+const StyledMapContainer = styled(MapContainer)`
+  width: 100%;
+  height: 100%;
+`;
+
+// Base map tile:
+const maps = {
+  base: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  google: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
+};
+
+export const LocationViewer: React.FC = () => {
+  const { userGeoLocation, locationDataList, handlePopupClick } =
+    useLocationViewerViewModel();
+
+  const geoLocation: GeoLocation = userGeoLocation || {
+    latitude: 35.68111,
+    longitude: 139.76667,
+  };
+
+  return (
+    <StyledMapContainer
+      center={[geoLocation.latitude, geoLocation.longitude]}
+      zoom={10}
+    >
+      <TileLayer
+        url={maps.base}
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+
+      {locationDataList.map((location) => (
+        <LocationTooltip
+          key={location.id}
+          locationData={location}
+          onClick={() => handlePopupClick(location.id)}
+        />
+      ))}
+    </StyledMapContainer>
+  );
+};
 
 
---- /workspaces/lyssm-ui/frontend/src/components/organisms/MarkerModal.tsx ---
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, IconButton, Modal, Typography } from '@mui/material';
+--- /workspaces/lyssm-ui/frontend/src/components/organisms/MarkerViewer.tsx ---
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { MarkerData } from '../../types/map';
-import { useMarkerModalViewModel } from '../../viewModels/MarkerModalViewModel';
-
-interface MarkerModalProps {
-  open: boolean;
-  onClose: () => void;
-  markerData: MarkerData | null;
-}
-
-const StyledModalBox = styled(Box)({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '85%',
-  maxWidth: '800px',
-  bgcolor: 'rgba(0, 0, 0, 0.2)',
-  p: 1,
-  maxHeight: '90vh',
-  overflowY: 'auto',
-  paddingTop: 36, // 閉じるボタン分のスペースを確保
-});
+import { useMarkerViewerViewModel } from '../../viewModels/MarkerViewerViewModel';
 
 const StyledCenterBox = styled(Box)({
   position: 'relative',
@@ -542,13 +704,6 @@ const StyledCenterBox = styled(Box)({
   justifyContent: 'center',
   alignItems: 'center',
   padding: 8,
-});
-
-const StyledIconButton = styled(IconButton)({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  color: 'white',
 });
 
 const StyledH2Typography = styled(Typography)({
@@ -562,71 +717,55 @@ const StyledTypography = styled(Typography)({
   color: 'white',
 });
 
-export const MarkerModal: React.FC<MarkerModalProps> = ({
-  open,
-  onClose,
-  markerData,
-}) => {
-  useMarkerModalViewModel(onClose);
+export const MarkerViewer: React.FC = () => {
+  const { markerData } = useMarkerViewerViewModel();
 
   if (!markerData) {
     return null;
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="marker-modal-title"
-      aria-describedby="marker-modal-description"
-    >
-      <StyledModalBox>
-        <StyledIconButton onClick={onClose}>
-          <CloseIcon />
-        </StyledIconButton>
-        <StyledH2Typography id="marker-modal-title" variant="h6">
-          {markerData.name}
-        </StyledH2Typography>
-        <StyledCenterBox>
-          <TransformWrapper>
-            <TransformComponent>
-              <img
-                src={markerData.imageUrl}
-                alt={markerData.name}
-                style={{
-                  // 画面中央
-                  display: 'block',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                  width: '100%',
-                }}
-              />
-            </TransformComponent>
-          </TransformWrapper>
-        </StyledCenterBox>
-        <StyledTypography id="marker-modal-description" variant="body1">
-          {markerData.description}
-        </StyledTypography>
-      </StyledModalBox>
-    </Modal>
+    <>
+      <StyledH2Typography id="marker-modal-title" variant="h6">
+        {markerData.name}
+      </StyledH2Typography>
+      <StyledCenterBox>
+        <TransformWrapper>
+          <TransformComponent>
+            <img
+              src={markerData.imageUrl}
+              alt={markerData.name}
+              style={{
+                // 画面中央
+                display: 'block',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                width: '100%',
+              }}
+            />
+          </TransformComponent>
+        </TransformWrapper>
+      </StyledCenterBox>
+      <StyledTypography id="marker-modal-description" variant="body1">
+        {markerData.description}
+      </StyledTypography>
+    </>
   );
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/components/organisms/PanoramaViewerBase.tsx ---
+--- /workspaces/lyssm-ui/frontend/src/components/organisms/SphereViewer.tsx ---
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
 import '@photo-sphere-viewer/core/index.css';
 import '@photo-sphere-viewer/map-plugin/index.css';
 import '@photo-sphere-viewer/markers-plugin/index.css';
 import React from 'react';
-import { usePanoramaViewerViewModel } from '../../viewModels/PanoramaViewerViewModel';
-import { ToggleSidebarButton } from '../molecules/ToggleSidebarButton';
-import { YawPitchDisplay } from '../molecules/YawPitchDisplay';
-import { MarkerModal } from './MarkerModal';
+import { useSphereViewerViewModel } from '../../viewModels/SphereViewerViewModel';
 
-interface PanoramaViewerBaseProps {
+interface SphereViewerProps {
   isDesktop: boolean;
+  optionalContent?: React.ReactNode;
 }
 const StyledWholeBox = styled(Box)({
   position: 'relative',
@@ -635,109 +774,25 @@ const StyledWholeBox = styled(Box)({
   display: 'flex',
 });
 
-const StyledFlexBox = styled(Box)({
-  flexGrow: 1,
-});
-
 const ViewerBox = styled(Box)({
   position: 'relative',
   width: '100%',
   height: '100%',
 });
 
-export const PanoramaViewerBase: React.FC<PanoramaViewerBaseProps> = ({
+export const SphereViewer: React.FC<SphereViewerProps> = ({
   isDesktop,
+  optionalContent,
 }) => {
-  const {
-    viewerRef,
-    currentOrientation,
-    isSidebarOpen,
-    isMarkerModalOpen,
-    handleToggleSidebar,
-    selectedMarkerData,
-    handleCloseMarkerModal,
-  } = usePanoramaViewerViewModel(isDesktop);
+  const { viewerRef } = useSphereViewerViewModel(isDesktop);
+
+  const content = <ViewerBox ref={viewerRef}></ViewerBox>;
 
   return (
     <StyledWholeBox>
-      <StyledFlexBox>
-        {/* ビューア本体 */}
-        <ViewerBox ref={viewerRef}></ViewerBox>
-
-        {/*
-        yawとpitchを右下に表示
-        画面が小さい場合は省略
-        */}
-        {isDesktop && (
-          <YawPitchDisplay
-            yaw={currentOrientation.yaw}
-            pitch={currentOrientation.pitch}
-          />
-        )}
-
-        {/*
-        トグルボタンを左上に配置
-        画面が小さい場合はサイドバーを用いないので、表示しない
-        */}
-        {isDesktop && (
-          <ToggleSidebarButton
-            isSidebarOpen={isSidebarOpen}
-            onToggle={handleToggleSidebar}
-          />
-        )}
-      </StyledFlexBox>
-      {/* selectedMarkerDataがTruethyならMarkerModalを表示 */}
-      {!!selectedMarkerData && (
-        <MarkerModal
-          open={isMarkerModalOpen}
-          onClose={handleCloseMarkerModal}
-          markerData={selectedMarkerData}
-        />
-      )}
+      {content}
+      {optionalContent}
     </StyledWholeBox>
-  );
-};
-
-export const CompactPanoramaViewer = () => (
-  <PanoramaViewerBase isDesktop={false} />
-);
-export const PanoramaViewer = () => <PanoramaViewerBase isDesktop={true} />;
-
-
---- /workspaces/lyssm-ui/frontend/src/components/organisms/Sidebar.tsx ---
-// import styled from 'styled-components';
-import { styled } from '@mui/system';
-import { TreeList } from './TreeList';
-
-const SidebarWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  position: 'relative',
-});
-
-const SidebarContainer = styled('div')<{ isOpen: boolean }>(({ isOpen }) => ({
-  overflowY: 'auto',
-  backgroundColor: '#fff',
-  transition: 'width 0.3s ease, padding 0.3s ease',
-  boxShadow: isOpen ? '2px 0 5px rgba(0, 0, 0, 0.1)' : 'none',
-  width: isOpen ? 'var(--sidebar-width, 300px)' : '0',
-  padding: isOpen ? '10px' : '0',
-  '@media (max-width: 768px)': {
-    width: isOpen ? '100%' : '0',
-  },
-}));
-
-interface SidebarProps {
-  isOpen: boolean;
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
-  return (
-    <SidebarWrapper>
-      <SidebarContainer isOpen={isOpen} aria-hidden={!isOpen} role="region">
-        <TreeList />
-      </SidebarContainer>
-    </SidebarWrapper>
   );
 };
 
@@ -747,7 +802,6 @@ import { Box, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/styles';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import React from 'react';
-import { useSidebarTreeViewModel } from '../../viewModels/SidebarTreeViewModel';
 import { useTreeListViewModel } from '../../viewModels/TreeListViewModel';
 import { TreeNode } from '../molecules/TreeNode';
 
@@ -755,11 +809,9 @@ const StyledSimpleTreeView = styled(SimpleTreeView)({
   '& .Mui-selected': {
     backgroundColor: 'transparent',
   },
-  bgcolor: 'transparent',
 });
 
 export const TreeList: React.FC = () => {
-  const { handleItemClick } = useSidebarTreeViewModel();
   const {
     layerDataList,
     sphereDataList,
@@ -767,6 +819,7 @@ export const TreeList: React.FC = () => {
     selectedLayerId,
     selectedSphereId,
     selectedMarkerId,
+    handleItemClick,
   } = useTreeListViewModel();
 
   // layerDataがない場合にnullを返す
@@ -856,7 +909,7 @@ import { Box, Button, styled, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setIsAuthenticated } from '../../store/slices/viewerSlice';
+import { setIsAuthenticated } from '../../store/slices/statusSlice';
 
 const StyledBox = styled(Box)({
   display: 'flex',
@@ -888,7 +941,7 @@ export const LoginPage: React.FC = () => {
       // ログイン成功 (トイモデルなので何もしない)
       setError('');
       dispatch(setIsAuthenticated(true));
-      navigate('/view'); // ログイン成功後、viewページへ移動
+      navigate('/map'); // ログイン成功後、viewページへ移動
     } else {
       setError('無効なメールアドレスまたはパスワードです。');
     }
@@ -926,11 +979,43 @@ export const LoginPage: React.FC = () => {
 
 
 --- /workspaces/lyssm-ui/frontend/src/components/pages/MapPage.tsx ---
-import React from 'react'
+import React from 'react';
+import { LocationViewer } from '../organisms/LocationViewer';
+import { MapPageTemplate } from '../templates/MapPageTemplate';
 
 export const MapPage: React.FC = () => {
-  return <div>Map Page</div>
-}
+  const content = <LocationViewer />;
+
+  return <MapPageTemplate content={content} />;
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/pages/NotFoundPage.tsx ---
+import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export const NotFoundPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+    >
+      <Typography variant="h1">404</Typography>
+      <Typography variant="h6" mb={2}>
+        お探しのページは見つかりませんでした。
+      </Typography>
+      <Button onClick={() => navigate('/')} variant="contained" color="primary">
+        ホームに戻る
+      </Button>
+    </Box>
+  );
+};
 
 
 --- /workspaces/lyssm-ui/frontend/src/components/pages/SettingPage.tsx ---
@@ -939,7 +1024,7 @@ import { styled } from '@mui/styles';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setIsAuthenticated } from '../../store/slices/viewerSlice';
+import { setIsAuthenticated } from '../../store/slices/statusSlice';
 import { RootState } from '../../store/store';
 
 const StyledBox = styled(Box)({
@@ -954,12 +1039,12 @@ export const SettingPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.viewer.isAuthenticated
+    (state: RootState) => state.status.isAuthenticated
   );
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -982,75 +1067,43 @@ export const SettingPage: React.FC = () => {
 
 --- /workspaces/lyssm-ui/frontend/src/components/pages/ViewPage.tsx ---
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { selectLayerId } from '../../store/slices/viewerSlice';
 import { RootState } from '../../store/store';
-import { CompactLayerViewer, LayerViewer } from '../organisms/LayerViewerBase';
-import {
-  CompactPanoramaViewer,
-  PanoramaViewer,
-} from '../organisms/PanoramaViewerBase';
 import { ViewPageTemplate } from '../templates/ViewPageTemplate';
+import { NotFoundPage } from './NotFoundPage';
 
 export const ViewPage: React.FC = () => {
-  // const { id } = useParams<{ id: string }>(); // URLパラメータからidを取得
-  const dispatch = useDispatch();
+  const { id } = useParams<{ id: string }>(); // URLパラメータからidを取得
+  const isDesktop = useMediaQuery('pc');
   const navigate = useNavigate();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.viewer.isAuthenticated
+    (state: RootState) => state.status.isAuthenticated
   );
-  const selectedSphereId = useSelector(
-    (state: RootState) => state.viewer.selectedSphereId
-  );
-  const selectedLayerId = useSelector(
-    (state: RootState) => state.viewer.selectedLayerId
-  );
-  const layerDataList = useSelector(
-    (state: RootState) => state.viewer.layerDataList
-  );
-  const isMoblie = useMediaQuery('mobile');
-
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
-  useEffect(() => {
-    if (layerDataList.length > 0 && !selectedLayerId) {
-      dispatch(selectLayerId(layerDataList[0].id));
-    }
-  }, [dispatch, layerDataList, selectedLayerId]);
+  if (!id) {
+    return <NotFoundPage />;
+  }
 
-  const content = selectedSphereId ? (
-    isMoblie ? (
-      <CompactPanoramaViewer />
-    ) : (
-      <PanoramaViewer />
-    )
-  ) : isMoblie ? (
-    <CompactLayerViewer />
-  ) : (
-    <LayerViewer />
-  );
-
-  return <ViewPageTemplate content={content} />;
+  return <ViewPageTemplate isDesktop={isDesktop} locationId={id} />;
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/components/templates/ViewPageTemplate.tsx ---
-import { styled } from '@mui/material';
+--- /workspaces/lyssm-ui/frontend/src/components/templates/MapPageTemplate.tsx ---
+// react
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useFetchLayers } from '../../hooks/useFetchLayers';
-import { useFetchMarkers } from '../../hooks/useFetchMarkers';
-import { useFetchSpheres } from '../../hooks/useFetchSpheres';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { RootState } from '../../store/store';
-import { CompactHeader, Header } from '../organisms/HeaderBase';
-import { Sidebar } from '../organisms/Sidebar';
+import styled from 'styled-components';
+// components
+import { Header } from '../organisms/HeaderBase';
+// hooks
+import { useFetchLocations } from '../../hooks/useFetchLocations';
+import { useFetchUserGeoLocation } from '../../hooks/useFetchUserGeoLocation';
 
 const Layout = styled('div')({
   display: 'flex',
@@ -1058,53 +1111,186 @@ const Layout = styled('div')({
   height: '100vh',
 });
 
-const WholeContent = styled('div')({
-  display: 'flex',
-  height: '100%',
-});
-
 const Content = styled('main')({
   flex: 1,
   display: 'flex',
 });
 
-interface ViewPageTemplateProps {
+interface MapPageTemplateProps {
   content: React.ReactNode;
 }
 
-export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
+export const MapPageTemplate: React.FC<MapPageTemplateProps> = ({
   content,
 }) => {
-  const isMobile = useMediaQuery('mobile');
-  const isSidebarOpen = useSelector(
-    (state: RootState) => state.viewer.isSidebarOpen
+  useFetchUserGeoLocation();
+  useFetchLocations();
+
+  return (
+    <Layout>
+      <Header />
+      <Content>{content}</Content>
+    </Layout>
   );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/components/templates/ViewPageTemplate.tsx ---
+// react
+import React from 'react';
+// material-ui
+import { styled } from '@mui/material';
+// components
+import { Sidebar } from '../molecules/Sidebar';
+import { CompactHeader, Header } from '../organisms/HeaderBase';
+// hooks
+import { useFetchLayers } from '../../hooks/useFetchLayers';
+import { useFetchMarkers } from '../../hooks/useFetchMarkers';
+import { useFetchSpheres } from '../../hooks/useFetchSpheres';
+// store
+import { useViewPageTemplateViewModel } from '../../viewModels/ViewPageTemplateViewModel';
+import { LayerTileGridButton } from '../molecules/LayerTileGridButton';
+import { ModalNode } from '../molecules/ModalNode';
+import { ToggleSidebarButton } from '../molecules/ToggleSidebarButton';
+import { LayerTileGrid } from '../organisms/LayerTileGrid';
+import { LayerViewer } from '../organisms/LayerViewer';
+import { MarkerViewer } from '../organisms/MarkerViewer';
+import { SphereViewer } from '../organisms/SphereViewer';
+import { TreeList } from '../organisms/TreeList';
+
+const Layout = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh',
+});
+
+//header以外をカバーするコンポーネント
+const WholeContent = styled('div')({
+  display: 'flex',
+  flex: 1,
+});
+
+const Content = styled('main')({
+  flex: 1,
+  display: 'flex',
+  height: '100%',
+  width: '100%',
+});
+
+const OptionalContent = styled('div')({
+  position: 'absolute',
+  top: 10,
+  left: 10,
+  zIndex: 1000,
+});
+
+interface ViewPageTemplateProps {
+  isDesktop: boolean;
+  locationId: string;
+}
+
+export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
+  isDesktop,
+  locationId,
+}) => {
+  const {
+    isSidebarOpen,
+    activeModal,
+    selectedSphereId,
+    closeModal,
+    handleToggleSidebar,
+    clearSelection,
+  } = useViewPageTemplateViewModel();
 
   // カスタムフックの使用
   useFetchLayers(); // 修正箇所
   useFetchSpheres(); // 修正箇所
   useFetchMarkers(); // 修正箇所
-
-  return isMobile ? (
-    // スマホの場合
-    <Layout>
-      <CompactHeader />
-      <WholeContent>
-        <Content>{content}</Content>
-      </WholeContent>
-    </Layout>
+  console.log('selectedSphereId:', selectedSphereId);
+  const optionalContent = isDesktop ? (
+    <OptionalContent>
+      <ToggleSidebarButton
+        isSidebarOpen={isSidebarOpen}
+        onToggle={handleToggleSidebar}
+      />
+      <LayerTileGridButton onClick={clearSelection} />
+    </OptionalContent>
   ) : (
+    <OptionalContent>
+      <LayerTileGridButton onClick={clearSelection} />
+    </OptionalContent>
+  );
+  const mainContent = selectedSphereId ? (
+    <SphereViewer isDesktop={isDesktop} optionalContent={optionalContent} />
+  ) : (
+    <LayerTileGrid />
+  );
+  const content: React.ReactNode = isDesktop ? (
     // PCの場合
     <Layout>
+      {/* ヘッダ */}
       <Header />
       <WholeContent>
         {/* サイドバー */}
-        {<Sidebar isOpen={isSidebarOpen} />}
+        <Sidebar isOpen={isSidebarOpen} content={<TreeList />} />
         {/* メインコンテンツ */}
-        <Content>{content}</Content>
+        <Content>{mainContent}</Content>
+      </WholeContent>
+    </Layout>
+  ) : (
+    <Layout>
+      {/* ヘッダ */}
+      <CompactHeader />
+      <WholeContent>
+        {/* メインコンテンツ */}
+        <Content>{mainContent}</Content>
       </WholeContent>
     </Layout>
   );
+
+  return (
+    <>
+      {content}
+      {/* レイヤーモーダルを表示 */}
+      <ModalNode
+        open={activeModal === 'layer'}
+        onClose={closeModal}
+        content={<LayerViewer />}
+      />
+      {/* マーカーモーダルを表示 */}
+      <ModalNode
+        open={activeModal === 'marker'}
+        onClose={closeModal}
+        content={<MarkerViewer />}
+      />
+    </>
+  );
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/hooks/useAnimationFrame.ts ---
+import { useCallback, useEffect, useRef } from 'react';
+
+export const useAnimationFrame = (isRunning: boolean, callback: () => void) => {
+  const reqIdRef = useRef<number | null>(null);
+
+  const loop = useCallback(() => {
+    if (isRunning) {
+      reqIdRef.current = requestAnimationFrame(loop);
+      callback();
+    }
+  }, [isRunning, callback]);
+
+  useEffect(() => {
+    if (isRunning) {
+      reqIdRef.current = requestAnimationFrame(loop);
+    }
+    return () => {
+      if (reqIdRef.current !== null) {
+        cancelAnimationFrame(reqIdRef.current);
+      }
+    };
+  }, [loop]);
 };
 
 
@@ -1112,7 +1298,8 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
-import { selectLayerDataList, setIsLoading } from '../store/slices/viewerSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectLayerDataList } from '../store/slices/viewSlice';
 
 export const useFetchLayers = () => {
   const dispatch = useDispatch();
@@ -1134,14 +1321,40 @@ export const useFetchLayers = () => {
 };
 
 
+--- /workspaces/lyssm-ui/frontend/src/hooks/useFetchLocations.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ApiService } from '../services/apiService';
+import { selectLocationDataList } from '../store/slices/mapSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { LocationData } from '../types/map';
+
+export const useFetchLocations = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsLoading(true));
+    const fetchLocations = async () => {
+      try {
+        const data: LocationData[] = await ApiService.fetchLocations();
+        dispatch(selectLocationDataList(data));
+      } catch (error) {
+        console.error('Error fetching Locations:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+    fetchLocations();
+  }, [dispatch]);
+};
+
+
 --- /workspaces/lyssm-ui/frontend/src/hooks/useFetchMarkers.ts ---
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
-import {
-  selectMarkerDataList,
-  setIsLoading,
-} from '../store/slices/viewerSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectMarkerDataList } from '../store/slices/viewSlice';
 
 export const useFetchMarkers = () => {
   const dispatch = useDispatch();
@@ -1195,10 +1408,8 @@ export const useFetchSignedUrl = (fileId: string) => {
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
-import {
-  selectSphereDataList,
-  setIsLoading,
-} from '../store/slices/viewerSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectSphereDataList } from '../store/slices/viewSlice';
 
 export const useFetchSpheres = () => {
   const dispatch = useDispatch();
@@ -1217,6 +1428,45 @@ export const useFetchSpheres = () => {
     };
     fetchSpheres();
   }, [dispatch]);
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/hooks/useFetchUserGeoLocation.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUserGeoLocation } from '../store/slices/mapSlice';
+import { setErrorMessage } from '../store/slices/statusSlice';
+
+export const useFetchUserGeoLocation = () => {
+  const dispatch = useDispatch();
+
+  const fetchUserGeoLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          dispatch(
+            setUserGeoLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            })
+          );
+        },
+        (error) => {
+          dispatch(setErrorMessage('現在位置の取得に失敗しました'));
+          console.error('Error retrieving location:', error);
+        }
+      );
+    } else {
+      dispatch(
+        setErrorMessage('Geolocationがこのブラウザでサポートされていません')
+      );
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
+
+  useEffect(() => {
+    fetchUserGeoLocation();
+  }, []);
 };
 
 
@@ -1257,25 +1507,28 @@ export const useMediaQuery = (queryKey: keyof typeof mediaQuery) => {
 
 
 --- /workspaces/lyssm-ui/frontend/src/index.tsx ---
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import reportWebVitals from './reportWebVitals'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-)
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+reportWebVitals();
 
 
---- /workspaces/lyssm-ui/frontend/src/models/PanoramaViewerModel.ts ---
+--- /workspaces/lyssm-ui/frontend/src/models/SphereViewerModel.ts ---
 import { Viewer } from '@photo-sphere-viewer/core';
 import '@photo-sphere-viewer/core/index.css';
 import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
@@ -1288,12 +1541,13 @@ import { animateToMarker } from '../utils/animationUtils';
 import { sleep } from '../utils/sleepUtils';
 import { getNearestSpheres, getSphereDataRelative } from '../utils/sphereUtils';
 
-export class PanoramaViewerModel {
+export class SphereViewerModel {
   viewerInstance: Viewer | null = null;
   mapPlugin: MapPlugin | null = null;
   markersPlugin: MarkersPlugin | null = null;
 
   initializeViewer(container: HTMLDivElement, isDesktop: boolean) {
+    //
     this.viewerInstance = new Viewer({
       container: container,
       panorama: '',
@@ -1425,7 +1679,7 @@ export class PanoramaViewerModel {
     }
     this.viewerInstance
       .setPanorama(selectedSphere.imageUrl, { caption: selectedSphere.name })
-      .catch((error) => console.error('Error loading panorama:', error));
+      .catch((error) => console.error('Error loading sphere:', error));
   }
 
   handleMarkerChange(selectedMarker: MarkerData) {
@@ -1467,6 +1721,7 @@ export default reportWebVitals;
 import { IndexPage } from '../components/pages/IndexPage';
 import { LoginPage } from '../components/pages/LoginPage';
 import { MapPage } from '../components/pages/MapPage';
+import { NotFoundPage } from '../components/pages/NotFoundPage';
 import { SettingPage } from '../components/pages/SettingPage';
 import { ViewPage } from '../components/pages/ViewPage';
 
@@ -1474,8 +1729,10 @@ export const routes = [
   { path: '/', element: <IndexPage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/map', element: <MapPage /> },
-  { path: '/view', element: <ViewPage /> },
+  { path: '/view/:id', element: <ViewPage /> },
   { path: '/setting', element: <SettingPage /> },
+  // 404ページ
+  { path: '*', element: <NotFoundPage /> },
 ];
 
 
@@ -1516,6 +1773,7 @@ export default apiClient;
 import { sleep } from '../utils/sleepUtils';
 import {
   isLayerDataList,
+  isLocationDataList,
   isMarkerDataList,
   isSphereDataList,
 } from '../utils/typeGuardUtils';
@@ -1525,6 +1783,42 @@ import {
 // react-queryを利用してデータのキャッシュや状態管理を行います。これにより、データの再フェッチを最小限に抑えられます。
 
 export const ApiService = {
+  async fetchLocations() {
+    // const response = await apiClient.get<LocationData[]>('/facilities');
+    // if (!response.ok) {
+    //   throw new Error('Failed to fetch facilities');
+    // }
+    // sonct data = await response.data;
+    const data = [
+      {
+        id: 'location01',
+        geoLocation: { latitude: 35.6762, longitude: 139.66 },
+        name: 'Location Name 01',
+        description: 'Location Name 01です',
+        iconType: 'house',
+      },
+      {
+        id: 'location02',
+        geoLocation: { latitude: 35.6762, longitude: 139.7 },
+        name: 'Location Name 02',
+        description: 'Location Name 02です',
+        iconType: 'default',
+      },
+      {
+        id: 'location03',
+        geoLocation: { latitude: 35.6762, longitude: 139.8 },
+        name: 'Location Name 03',
+        description: 'Location Name 03です',
+        iconType: 'default',
+      },
+    ];
+    if (!isLocationDataList(data)) {
+      throw new Error('invalid data format');
+    }
+    sleep(1000);
+    return data;
+  },
+
   async fetchLayers() {
     // const response = await apiClient.get<LayerData[]>('/layers');
     // if (!response.ok) {
@@ -1534,15 +1828,28 @@ export const ApiService = {
     const data = [
       {
         id: 'layer01',
+        locationId: 'location01',
         name: 'Layer Name 01',
         imageUrl: '/images/layer_sample.PNG',
+        imageSize: { width: 1224, height: 1065 },
         createdAt: '2021-01-01T00:00:00',
         updatedAt: '2021-01-02T00:00:00',
       },
       {
         id: 'layer02',
+        locationId: 'location01',
         name: 'Layer Name 02',
         imageUrl: '/images/layer_sample.PNG',
+        imageSize: { width: 1224, height: 1065 },
+        createdAt: '2021-01-01T00:00:00',
+        updatedAt: '2021-01-02T00:00:00',
+      },
+      {
+        id: 'layer03',
+        locationId: 'location02',
+        name: 'Layer Name 03',
+        imageUrl: '/images/layer_sample.PNG',
+        imageSize: { width: 1224, height: 1065 },
         createdAt: '2021-01-01T00:00:00',
         updatedAt: '2021-01-02T00:00:00',
       },
@@ -1658,15 +1965,104 @@ export const ApiService = {
 import '@testing-library/jest-dom';
 
 
---- /workspaces/lyssm-ui/frontend/src/store/slices/viewerSlice.ts ---
+--- /workspaces/lyssm-ui/frontend/src/store/slices/mapSlice.ts ---
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { GeoLocation, LocationData } from '../../types/map';
+
+interface ViewerState {
+  userGeoLocation: GeoLocation | null; // ユーザーの位置情報
+  locationDataList: LocationData[]; // マーカーデータリスト
+}
+
+const initialState: ViewerState = {
+  userGeoLocation: null,
+  locationDataList: [],
+};
+
+const mapSlice = createSlice({
+  name: 'map',
+  initialState,
+  reducers: {
+    setUserGeoLocation: (state, action: PayloadAction<GeoLocation | null>) => {
+      state.userGeoLocation = action.payload;
+    },
+    selectLocationDataList: (state, action: PayloadAction<LocationData[]>) => {
+      state.locationDataList = action.payload;
+    },
+  },
+});
+
+export const { setUserGeoLocation, selectLocationDataList } = mapSlice.actions;
+
+export default mapSlice.reducer;
+
+
+--- /workspaces/lyssm-ui/frontend/src/store/slices/statusSlice.ts ---
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface StatusState {
+  isAuthenticated: boolean; // 認証済みかどうか
+  isLoading: boolean; // ローディング中かどうか
+  isSidebarOpen: boolean; // サイドバーが開いているかどうか
+  activeModal: 'layer' | 'marker' | null; // アクティブなモーダル
+  notificationMessage: string | null; // 通知メッセージ
+  errorMessage: string | null; // エラーメッセージ
+}
+
+const initialState: StatusState = {
+  isAuthenticated: false,
+  isLoading: false,
+  isSidebarOpen: true,
+  activeModal: null,
+  notificationMessage: null,
+  errorMessage: null,
+};
+
+const statusSlice = createSlice({
+  name: 'status',
+  initialState,
+  reducers: {
+    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    setActiveModal: (
+      state,
+      action: PayloadAction<'layer' | 'marker' | null>
+    ) => {
+      state.activeModal = action.payload;
+    },
+    setNotificationMessage: (state, action: PayloadAction<string | null>) => {
+      state.notificationMessage = action.payload;
+    },
+    setErrorMessage: (state, action: PayloadAction<string | null>) => {
+      state.errorMessage = action.payload;
+    },
+  },
+});
+
+export const {
+  setIsAuthenticated,
+  setIsLoading,
+  toggleSidebar,
+  setActiveModal,
+  setNotificationMessage,
+  setErrorMessage,
+} = statusSlice.actions;
+
+export default statusSlice.reducer;
+
+
+--- /workspaces/lyssm-ui/frontend/src/store/slices/viewSlice.ts ---
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LayerData, MarkerData, SphereData } from '../../types/map';
 
 interface ViewerState {
-  isAuthenticated: boolean; // 認証済みかどうか
-  isLoading: boolean; // ローディング中かどうか
-  isSidebarOpen: boolean; // サイドバーが開いているかどうか
-  isMarkerModalOpen: boolean; // マーカーモーダルが開いているかどうか
   selectedLayerId: string | null; // 選択中のレイヤーID
   lastSelectedSphereId: string | null; // 直前に選択したSphereID
   selectedSphereId: string | null; // 選択中のSphereID
@@ -1677,10 +2073,6 @@ interface ViewerState {
 }
 
 const initialState: ViewerState = {
-  isAuthenticated: false,
-  isLoading: false,
-  isSidebarOpen: false,
-  isMarkerModalOpen: false,
   selectedLayerId: null,
   lastSelectedSphereId: null,
   selectedSphereId: null,
@@ -1694,18 +2086,6 @@ const viewerSlice = createSlice({
   name: 'viewer',
   initialState,
   reducers: {
-    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
-      state.isAuthenticated = action.payload;
-    },
-    setIsLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
-    toggleSidebar: (state) => {
-      state.isSidebarOpen = !state.isSidebarOpen;
-    },
-    setIsMarkerModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isMarkerModalOpen = action.payload;
-    },
     selectLayerId: (state, action: PayloadAction<string | null>) => {
       state.selectedLayerId = action.payload;
     },
@@ -1731,10 +2111,6 @@ const viewerSlice = createSlice({
 });
 
 export const {
-  setIsAuthenticated,
-  setIsLoading,
-  toggleSidebar,
-  setIsMarkerModalOpen,
   selectLayerId,
   selectLastSphereId,
   selectSphereId,
@@ -1748,19 +2124,23 @@ export default viewerSlice.reducer;
 
 
 --- /workspaces/lyssm-ui/frontend/src/store/store.ts ---
-import { configureStore } from '@reduxjs/toolkit'
-import viewerReducer from './slices/viewerSlice'
+import { configureStore } from '@reduxjs/toolkit';
+import mapReducer from './slices/mapSlice';
+import statusReducer from './slices/statusSlice';
+import viewerReducer from './slices/viewSlice';
 
 const store = configureStore({
   reducer: {
+    status: statusReducer,
     viewer: viewerReducer,
+    map: mapReducer,
   },
-})
+});
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
-export default store
+export default store;
 
 
 --- /workspaces/lyssm-ui/frontend/src/types/map.d.ts ---
@@ -1780,37 +2160,38 @@ export interface Orientation {
   pitch: number;
 }
 
-// export interface FacilityMarkerData {
-//   id: string
-//   geoLocation: GeoLocation
-//   name: string
-//   description: string
-//   websiteUrl?: string
-//   iconType?: keyof typeof icons // 文字列（アイコン名）で指定
-// }
+export interface ImageSize {
+  width: number;
+  height: number;
+}
 
-export interface SphereMarkerData {
+export interface LocationData {
+  id: string;
   geoLocation: GeoLocation;
   name: string;
   description: string;
-  iconUrl?: string;
+  iconType: 'default' | 'house';
+  websiteUrl?: string; // Optional
 }
 
 export interface LayerData {
   id: string;
+  locationId: string;
   name: string;
   imageUrl: string;
+  imageSize: ImageSize;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface SphereData {
   id: string;
-  layerId: string;
   name: string;
   imageUrl: string;
   position: Position;
   createdAt: string;
+  layerId?: string; // Optional layerIdがない場合はレイヤー上でなく、地図上に表示
+  geoLocation?: GeoLocation; // Optional
 }
 
 export interface MarkerData {
@@ -1841,6 +2222,31 @@ export const animateToMarker = (
     pitch: (pitch * Math.PI) / 180,
     speed: speed,
   });
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/utils/mapUtils.ts ---
+import { default as L } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// カスタムアイコンの定義
+const icons: { [key: string]: L.Icon } = {
+  //   default: Leaflet.Marker.prototype.options.icon,
+  default: new L.Icon({
+    iconUrl: '/images/marker-icon.png',
+    popupAnchor: [12, 0],
+  }),
+  house: new L.Icon({
+    iconUrl: '/images/ie-icon.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, -16],
+    popupAnchor: [0, 16],
+  }),
+  // 他のアイコンもここに追加できます
+};
+
+export const getLocationIcon = (iconType: string): L.Icon => {
+  return icons[iconType] || icons.default;
 };
 
 
@@ -1938,30 +2344,128 @@ export const getNearestSpheres = (
 
 --- /workspaces/lyssm-ui/frontend/src/utils/typeGuardUtils.ts ---
 // src/utils/typeGuards.ts
-import { LayerData, MarkerData, SphereData } from '../types/map';
+import {
+  GeoLocation,
+  ImageSize,
+  LayerData,
+  LocationData,
+  MarkerData,
+  Orientation,
+  Position,
+  SphereData,
+} from '../types/map';
 
-export function isLayerDataList(data: any): data is LayerData[] {
+function isGeoLocation(data: any): data is GeoLocation {
   return (
-    Array.isArray(data) && data.every((item) => 'id' in item && 'name' in item)
+    typeof data === 'object' &&
+    'latitude' in data &&
+    'longitude' in data &&
+    typeof data.latitude === 'number' &&
+    typeof data.longitude === 'number'
   );
 }
 
-export function isMarkerDataList(data: any): data is MarkerData[] {
+function isPosition(data: any): data is Position {
   return (
-    Array.isArray(data) &&
-    data.every((item) => 'id' in item && 'name' in item && 'sphereId' in item)
+    typeof data === 'object' &&
+    'x' in data &&
+    'y' in data &&
+    typeof data.x === 'number' &&
+    typeof data.y === 'number'
+  );
+}
+
+function isOrientation(data: any): data is Orientation {
+  return (
+    typeof data === 'object' &&
+    'yaw' in data &&
+    'pitch' in data &&
+    typeof data.yaw === 'number' &&
+    typeof data.pitch === 'number'
+  );
+}
+
+function isImageSize(data: any): data is ImageSize {
+  return (
+    typeof data === 'object' &&
+    'width' in data &&
+    'height' in data &&
+    typeof data.width === 'number' &&
+    typeof data.height === 'number'
+  );
+}
+
+function isLocationData(data: any): data is LocationData {
+  return (
+    typeof data === 'object' &&
+    'id' in data &&
+    'geoLocation' in data &&
+    'name' in data &&
+    'description' in data &&
+    isGeoLocation(data.geoLocation)
+  );
+}
+
+export function isLocationDataList(data: any): data is LocationData[] {
+  return Array.isArray(data) && data.every(isLocationData);
+}
+
+function isLayerData(data: any): data is LayerData {
+  return (
+    typeof data === 'object' &&
+    'id' in data &&
+    'locationId' in data &&
+    'name' in data &&
+    'imageUrl' in data &&
+    'imageSize' in data &&
+    'createdAt' in data &&
+    'updatedAt' in data &&
+    isImageSize(data.imageSize)
+  );
+}
+
+export function isLayerDataList(data: any): data is LayerData[] {
+  return Array.isArray(data) && data.every(isLayerData);
+}
+
+function isSphereData(data: any): data is SphereData {
+  return (
+    typeof data === 'object' &&
+    'id' in data &&
+    'name' in data &&
+    'imageUrl' in data &&
+    'position' in data &&
+    'createdAt' in data &&
+    isPosition(data.position)
   );
 }
 
 export function isSphereDataList(data: any): data is SphereData[] {
+  return Array.isArray(data) && data.every(isSphereData);
+}
+
+function isMarkerData(data: any): data is MarkerData {
   return (
-    Array.isArray(data) &&
-    data.every((item) => 'id' in item && 'name' in item && 'layerId' in item)
+    typeof data === 'object' &&
+    'id' in data &&
+    'sphereId' in data &&
+    'name' in data &&
+    'description' in data &&
+    'orientation' in data &&
+    'imageUrl' in data &&
+    'thumbnailUrl' in data &&
+    'markerType' in data &&
+    'createdAt' in data &&
+    isOrientation(data.orientation)
   );
 }
 
+export function isMarkerDataList(data: any): data is MarkerData[] {
+  return Array.isArray(data) && data.every(isMarkerData);
+}
 
---- /workspaces/lyssm-ui/frontend/src/utils/viewerUtils.ts ---
+
+--- /workspaces/lyssm-ui/frontend/src/utils/viewUtils.ts ---
 import { Position, Viewer } from '@photo-sphere-viewer/core';
 import { Orientation } from '../types/map';
 
@@ -1969,17 +2473,45 @@ export const getOrientation = (viewer: Viewer | null) => {
   if (!viewer) return { yaw: 0, pitch: 0 };
   const position: Position = viewer.getPosition();
   if (!position) return { yaw: 0, pitch: 0 };
+  // 小数点以下第1位までで四捨五入
   const orientation: Orientation = {
-    yaw: (position.yaw * 180) / Math.PI,
-    pitch: (position.pitch * 180) / Math.PI,
+    yaw: Math.round(((position.yaw * 180) / Math.PI) * 10) / 10,
+    pitch: Math.round(((position.pitch * 180) / Math.PI) * 10) / 10,
   };
   return orientation;
 };
 
 
+--- /workspaces/lyssm-ui/frontend/src/viewModels/LayerTileGridViewModel.ts ---
+import { useDispatch, useSelector } from 'react-redux';
+import { setActiveModal } from '../store/slices/statusSlice';
+import { selectLayerId } from '../store/slices/viewSlice';
+import { RootState } from '../store/store';
+
+export const useLayerTileGridViewModel = () => {
+  const dispatch = useDispatch();
+  const layerDataList = useSelector(
+    (state: RootState) => state.viewer.layerDataList
+  );
+
+  const handleLayerClick = (layerId: string) => {
+    console.log(`Layer clicked: ${layerId}`);
+    // レイヤークリック時の処理をここに記述
+    dispatch(selectLayerId(layerId));
+    dispatch(setActiveModal('layer' as 'layer'));
+  };
+
+  return {
+    layerDataList,
+    handleLayerClick,
+  };
+};
+
+
 --- /workspaces/lyssm-ui/frontend/src/viewModels/LayerViewerViewModel.ts ---
 import { useDispatch, useSelector } from 'react-redux';
-import { selectSphereId, toggleSidebar } from '../store/slices/viewerSlice';
+import { setActiveModal } from '../store/slices/statusSlice';
+import { selectSphereId } from '../store/slices/viewSlice';
 import { RootState } from '../store/store';
 
 export const useLayerViewerViewModel = () => {
@@ -1993,9 +2525,6 @@ export const useLayerViewerViewModel = () => {
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
   );
-  const isSidebarOpen = useSelector(
-    (state: RootState) => state.viewer.isSidebarOpen
-  );
 
   const selectedLayer = layerDataList.find(
     (layer) => layer.id === selectedLayerId
@@ -2004,140 +2533,153 @@ export const useLayerViewerViewModel = () => {
   // Sphereのピンをクリックしたときの処理
   const handleSphereClick = (sphereId: string) => {
     dispatch(selectSphereId(sphereId));
-  };
-
-  const handleToggleSidebar = () => {
-    dispatch(toggleSidebar());
+    dispatch(setActiveModal(null));
   };
 
   return {
     selectedLayer,
     sphereDataList,
     handleSphereClick,
-    isSidebarOpen,
-    handleToggleSidebar,
   };
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/viewModels/MarkerModalViewModel.ts ---
-import { useEffect } from 'react';
+--- /workspaces/lyssm-ui/frontend/src/viewModels/LocationViewerViewModel.ts ---
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from '../store/store';
 
-export const useMarkerModalViewModel = (onClose: () => void) => {
-  // ESCキーでモーダルを閉じる
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEsc);
+export const useLocationViewerViewModel = () => {
+  const navigate = useNavigate();
+  const userGeoLocation = useSelector(
+    (state: RootState) => state.map.userGeoLocation
+  );
+  const locationDataList = useSelector(
+    (state: RootState) => state.map.locationDataList
+  );
 
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-    };
-  }, [onClose]);
+  const handlePopupClick = (locationId: string) => {
+    navigate(`/view/${locationId}`);
+  };
+
+  return {
+    userGeoLocation,
+    locationDataList,
+    handlePopupClick,
+  };
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/viewModels/PanoramaViewerViewModel.tsx ---
+--- /workspaces/lyssm-ui/frontend/src/viewModels/MarkerViewerViewModel.ts ---
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+
+export const useMarkerViewerViewModel = () => {
+  const selectedMarkerId = useSelector(
+    (state: RootState) => state.viewer.selectedMarkerId
+  );
+  const markerDataList = useSelector(
+    (state: RootState) => state.viewer.markerDataList
+  );
+  const markerData = markerDataList.find(
+    (marker) => marker.id === selectedMarkerId
+  );
+
+  return {
+    markerData,
+  };
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/viewModels/SphereViewerViewModel.tsx ---
 // react
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import ReactDOMServer from 'react-dom/server';
 import { useDispatch, useSelector } from 'react-redux';
 // global state
+import { setActiveModal } from '../store/slices/statusSlice';
 import {
   selectLastSphereId,
   selectLayerId,
   selectMarkerId,
   selectSphereId,
-  setIsMarkerModalOpen,
-  toggleSidebar,
-} from '../store/slices/viewerSlice';
+} from '../store/slices/viewSlice';
 import { RootState } from '../store/store';
 // model
-import { PanoramaViewerModel } from '../models/PanoramaViewerModel';
-import { Orientation } from '../types/map';
+import { SphereViewerModel } from '../models/SphereViewerModel';
 // utils
-import ReactDOMServer from 'react-dom/server';
 import { CustomTooltip } from '../components/molecules/CustomTooltip';
-import { getOrientation } from '../utils/viewerUtils';
 
-export const usePanoramaViewerViewModel = (isDesktop: boolean) => {
+export const useSphereViewerViewModel = (isDesktop: boolean) => {
   const dispatch = useDispatch();
   const viewerRef = useRef<HTMLDivElement | null>(null);
-  const panoramaViewerModelRef = useRef<PanoramaViewerModel | null>(null);
+  const sphereViewerModelRef = useRef<SphereViewerModel | null>(null);
 
-  const isSidebarOpen = useSelector(
-    (state: RootState) => state.viewer.isSidebarOpen
-  );
-  const isMarkerModalOpen = useSelector(
-    (state: RootState) => state.viewer.isMarkerModalOpen
-  );
-  const selectedLayerId = useSelector(
-    (state: RootState) => state.viewer.selectedLayerId
-  );
-  const lastSelectedSphereId = useSelector(
-    (state: RootState) => state.viewer.lastSelectedSphereId
-  );
-  const selectedSphereId = useSelector(
-    (state: RootState) => state.viewer.selectedSphereId
-  );
-  const selectedMarkerId = useSelector(
-    (state: RootState) => state.viewer.selectedMarkerId
-  );
-  const layerDataList = useSelector(
-    (state: RootState) => state.viewer.layerDataList
-  );
-  const sphereDataList = useSelector(
-    (state: RootState) => state.viewer.sphereDataList
-  );
-  const markerDataList = useSelector(
-    (state: RootState) => state.viewer.markerDataList
-  );
-  const [currentOrientation, setCurrentOrientation] = useState<Orientation>({
-    yaw: 0.0,
-    pitch: 0.0,
-  });
+  // 現在のyawとpitchを保持
+  // const [currentOrientation, setCurrentOrientation] = useState<Orientation>({
+  //   yaw: 0.0,
+  //   pitch: 0.0,
+  // });
+  // updateOrientationはuseCallbackでラップし、無駄な再生成を避ける
+  // const updateOrientation = useCallback(() => {
+  //   if (sphereViewerModelRef.current) {
+  //     const orientation = getOrientation(
+  //       sphereViewerModelRef.current.viewerInstance
+  //     );
+  //     setCurrentOrientation((prev) => {
+  //       // 違いが大きい時だけ更新して、無駄な再レンダリングを防ぐ
+  //       if (
+  //         Math.abs(orientation.yaw - prev.yaw) > 0.1 ||
+  //         Math.abs(orientation.pitch - prev.pitch) > 0.1
+  //       ) {
+  //         return orientation;
+  //       }
+  //       return prev;
+  //     });
+  //   }
+  // }, [sphereViewerModelRef]);
+  // デスクトップ時のみアニメーションを有効化
+  // useAnimationFrame(isDesktop, updateOrientation);
 
-  const handleToggleSidebar = () => {
-    dispatch(toggleSidebar());
-  };
-
-  // 選択されたマーカーのデータ
-  const selectedMarkerData = markerDataList.find(
-    (marker) => marker.id === selectedMarkerId
-  );
+  const {
+    selectedLayerId,
+    lastSelectedSphereId,
+    selectedSphereId,
+    selectedMarkerId,
+    layerDataList,
+    sphereDataList,
+    markerDataList,
+  } = useSelector((state: RootState) => state.viewer);
 
   // ツールチップの内容をView側で作成
-  const markerTooltipContents = markerDataList.reduce(
-    (contents, marker) => {
-      const tooltipContent = ReactDOMServer.renderToStaticMarkup(
-        <CustomTooltip markerData={marker} key={marker.id} />
-      );
-      contents[marker.id] = tooltipContent;
-      return contents;
-    },
-    {} as { [key: string]: string }
-  );
+  const markerTooltipContents = useMemo(() => {
+    return markerDataList.reduce(
+      (contents, marker) => {
+        const tooltipContent = ReactDOMServer.renderToStaticMarkup(
+          <CustomTooltip markerData={marker} key={marker.id} />
+        );
+        contents[marker.id] = tooltipContent;
+        return contents;
+      },
+      {} as { [key: string]: string }
+    );
+  }, [markerDataList]);
 
   // Viewerの初期化
   useEffect(() => {
     if (!viewerRef.current) return;
 
-    panoramaViewerModelRef.current = new PanoramaViewerModel();
-    panoramaViewerModelRef.current.initializeViewer(
-      viewerRef.current,
-      isDesktop
-    );
+    sphereViewerModelRef.current = new SphereViewerModel();
+    sphereViewerModelRef.current.initializeViewer(viewerRef.current, isDesktop);
 
     // ビューアのイベントリスナーを設定
-    const viewerInstance = panoramaViewerModelRef.current.viewerInstance;
-    const mapPlugin = panoramaViewerModelRef.current.mapPlugin;
-    const markersPlugin = panoramaViewerModelRef.current.markersPlugin;
+    const viewerInstance = sphereViewerModelRef.current.viewerInstance;
+    const mapPlugin = sphereViewerModelRef.current.mapPlugin;
+    const markersPlugin = sphereViewerModelRef.current.markersPlugin;
 
-    // マーカークリック時の処理
+    // Sphere上にあるマーカークリック時の処理
     markersPlugin?.addEventListener('select-marker', ({ marker }) => {
-      // マーカーがSphereかどうか判定
+      // Sphere上にあるマーカーがSphereかどうか判定
       const selectedSphere = sphereDataList.find(
         (sphere) => sphere.id === marker.id
       );
@@ -2146,13 +2688,13 @@ export const usePanoramaViewerViewModel = (isDesktop: boolean) => {
         dispatch(selectMarkerId(null));
         return;
       }
-      // マーカーがMarkerかどうか判定
+      // Sphere上にあるマーカーがMarkerかどうか判定
       const selectedMarker = markerDataList.find(
         (_marker) => _marker.id === marker.id
       );
       if (selectedMarker) {
         dispatch(selectMarkerId(marker.id));
-        dispatch(setIsMarkerModalOpen(true));
+        dispatch(setActiveModal('marker' as 'marker'));
       }
     });
 
@@ -2161,41 +2703,36 @@ export const usePanoramaViewerViewModel = (isDesktop: boolean) => {
       dispatch(selectSphereId(hotspotId));
     });
 
-    // YawとPitchの更新（デスクトップのみ）
-    if (isDesktop) {
-      const updateOrientation = () => {
-        const orientation = getOrientation(viewerInstance);
-        setCurrentOrientation({ ...orientation });
-        requestAnimationFrame(updateOrientation);
-      };
-      updateOrientation();
-    }
-
     return () => {
       viewerInstance?.destroy();
+      sphereViewerModelRef.current = null;
     };
   }, [markerDataList, sphereDataList, layerDataList, isDesktop]);
 
   // Layerの変更時
+  // やること: handleLayerChangeを呼び出す
   // 監視対象: selectedLayerId, layerDataList
   useEffect(() => {
-    if (!selectedLayerId || !panoramaViewerModelRef.current) return;
+    // console.log('selectedLayerId', selectedLayerId);
+    if (!selectedLayerId || !sphereViewerModelRef.current) return;
 
     const selectedLayer = layerDataList.find(
       (layer) => layer.id === selectedLayerId
     );
     if (!selectedLayer) return;
 
-    panoramaViewerModelRef.current.handleLayerChange(
+    sphereViewerModelRef.current.handleLayerChange(
       selectedLayer,
       sphereDataList
     );
-  }, [selectedLayerId, layerDataList, sphereDataList]);
+  }, [selectedLayerId]); //, layerDataList, sphereDataList
 
   // Sphereの変更時
+  // やること: handleSphereChangeを呼び出す、マーカーとマップの更新、lastSelectedSphereIdを更新
   // 監視対象: selectedSphereId, sphereDataList, markerDataList, layerDataList
   useEffect(() => {
-    if (!selectedSphereId || !panoramaViewerModelRef.current) return;
+    // console.log('selectedSphereId', selectedSphereId);
+    if (!selectedSphereId || !sphereViewerModelRef.current) return;
 
     const selectedSphere = sphereDataList.find(
       (sphere) => sphere.id === selectedSphereId
@@ -2206,18 +2743,12 @@ export const usePanoramaViewerViewModel = (isDesktop: boolean) => {
       (sphere) => sphere.id === lastSelectedSphereId
     );
 
-    const selectedLayer = layerDataList.find(
-      (layer) => layer.id === selectedSphere.layerId
-    );
-    if (!selectedLayer) return;
+    const layerChanged = selectedSphere.layerId !== lastSelectedSphere?.layerId;
 
-    const layerChanged = selectedLayerId !== selectedLayer.id;
-
-    if (layerChanged) {
-      dispatch(selectLayerId(selectedLayerId));
+    if (layerChanged && selectedSphere.layerId) {
+      dispatch(selectLayerId(selectedSphere.layerId));
     }
-
-    panoramaViewerModelRef.current.handleSphereChange(
+    sphereViewerModelRef.current.handleSphereChange(
       selectedSphere,
       lastSelectedSphere || null,
       layerChanged
@@ -2226,55 +2757,45 @@ export const usePanoramaViewerViewModel = (isDesktop: boolean) => {
     dispatch(selectLastSphereId(selectedSphere.id));
 
     // マーカーとマップの更新
-    panoramaViewerModelRef.current.updateMarkersAndMap(
+    sphereViewerModelRef.current.updateMarkersAndMap(
       selectedSphere,
       sphereDataList,
       markerDataList,
       markerTooltipContents
     );
-  }, [selectedSphereId, markerDataList, sphereDataList, layerDataList]);
+  }, [selectedSphereId]); //, markerDataList, sphereDataList, layerDataList
 
   // Markerの変更時
+  // やること: handleMarkerChangeを呼び出す
   // 監視対象: selectedMarkerId, markerDataList
   useEffect(() => {
-    if (!selectedMarkerId || !panoramaViewerModelRef.current) return;
+    // console.log('selectedMarkerId', selectedMarkerId);
+    if (!selectedMarkerId || !sphereViewerModelRef.current) return;
 
     const selectedMarker = markerDataList.find(
       (marker) => marker.id === selectedMarkerId
     );
     if (!selectedMarker) return;
 
-    panoramaViewerModelRef.current.handleMarkerChange(selectedMarker);
-  }, [selectedMarkerId, markerDataList]);
-
-  // MarkerModalを閉じる処理
-  const handleCloseMarkerModal = () => {
-    dispatch(setIsMarkerModalOpen(false));
-  };
+    sphereViewerModelRef.current.handleMarkerChange(selectedMarker);
+  }, [selectedMarkerId]); //, markerDataList
 
   return {
     viewerRef,
-    currentOrientation,
-    isSidebarOpen,
-    isMarkerModalOpen,
-    handleToggleSidebar,
-    selectedMarkerData,
-    handleCloseMarkerModal,
   };
 };
 
 
---- /workspaces/lyssm-ui/frontend/src/viewModels/SidebarTreeViewModel.ts ---
-// src/viewModels/SidebarTreeViewModel.ts
+--- /workspaces/lyssm-ui/frontend/src/viewModels/TreeListViewModel.ts ---
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectLayerId,
   selectMarkerId,
   selectSphereId,
-} from '../store/slices/viewerSlice';
+} from '../store/slices/viewSlice';
 import { RootState } from '../store/store';
 
-export const useSidebarTreeViewModel = () => {
+export const useTreeListViewModel = () => {
   const dispatch = useDispatch();
   const layerDataList = useSelector(
     (state: RootState) => state.viewer.layerDataList
@@ -2285,6 +2806,15 @@ export const useSidebarTreeViewModel = () => {
   const markerDataList = useSelector(
     (state: RootState) => state.viewer.markerDataList
   );
+  const selectedLayerId = useSelector(
+    (state: RootState) => state.viewer.selectedLayerId
+  );
+  const selectedSphereId = useSelector(
+    (state: RootState) => state.viewer.selectedSphereId
+  );
+  const selectedMarkerId = useSelector(
+    (state: RootState) => state.viewer.selectedMarkerId
+  );
 
   const handleItemClick = (
     event: React.SyntheticEvent<Element, Event>,
@@ -2292,16 +2822,16 @@ export const useSidebarTreeViewModel = () => {
   ) => {
     const selectedLayer = layerDataList.find((layer) => layer.id === itemId);
     if (selectedLayer) {
-      dispatch(selectLayerId(itemId));
-      dispatch(selectSphereId(null));
-      dispatch(selectMarkerId(null));
+      // dispatch(selectLayerId(itemId));
+      // dispatch(selectSphereId(null));
+      // dispatch(selectMarkerId(null));
       return;
     }
 
     const selectedSphere = sphereDataList.find(
       (sphere) => sphere.id === itemId
     );
-    if (selectedSphere) {
+    if (selectedSphere && selectedSphere.layerId) {
       dispatch(selectLayerId(selectedSphere.layerId));
       dispatch(selectSphereId(itemId));
       dispatch(selectMarkerId(null));
@@ -2315,41 +2845,14 @@ export const useSidebarTreeViewModel = () => {
       const sphereOfMarker = sphereDataList.find(
         (sphere) => sphere.id === selectedMarker.sphereId
       );
-      dispatch(selectLayerId(sphereOfMarker!.layerId));
-      dispatch(selectSphereId(selectedMarker.sphereId));
-      dispatch(selectMarkerId(itemId));
+      if (sphereOfMarker && sphereOfMarker.layerId) {
+        dispatch(selectLayerId(sphereOfMarker.layerId));
+        dispatch(selectSphereId(selectedMarker.sphereId));
+        dispatch(selectMarkerId(itemId));
+        return;
+      }
     }
   };
-
-  return {
-    handleItemClick,
-  };
-};
-
-
---- /workspaces/lyssm-ui/frontend/src/viewModels/TreeListViewModel.ts ---
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-
-export const useTreeListViewModel = () => {
-  const layerDataList = useSelector(
-    (state: RootState) => state.viewer.layerDataList
-  );
-  const sphereDataList = useSelector(
-    (state: RootState) => state.viewer.sphereDataList
-  );
-  const markerDataList = useSelector(
-    (state: RootState) => state.viewer.markerDataList
-  );
-  const selectedLayerId = useSelector(
-    (state: RootState) => state.viewer.selectedLayerId
-  );
-  const selectedSphereId = useSelector(
-    (state: RootState) => state.viewer.selectedSphereId
-  );
-  const selectedMarkerId = useSelector(
-    (state: RootState) => state.viewer.selectedMarkerId
-  );
 
   return {
     layerDataList,
@@ -2358,6 +2861,51 @@ export const useTreeListViewModel = () => {
     selectedLayerId,
     selectedSphereId,
     selectedMarkerId,
+    handleItemClick,
+  };
+};
+
+
+--- /workspaces/lyssm-ui/frontend/src/viewModels/ViewPageTemplateViewModel.ts ---
+import { useDispatch, useSelector } from 'react-redux';
+import { setActiveModal, toggleSidebar } from '../store/slices/statusSlice';
+import {
+  selectLayerId,
+  selectMarkerId,
+  selectSphereId,
+} from '../store/slices/viewSlice';
+import { RootState } from '../store/store';
+
+export const useViewPageTemplateViewModel = () => {
+  const dispatch = useDispatch();
+  const isSidebarOpen = useSelector(
+    (state: RootState) => state.status.isSidebarOpen
+  );
+  const activeModal = useSelector(
+    (state: RootState) => state.status.activeModal
+  );
+  const selectedSphereId = useSelector(
+    (state: RootState) => state.viewer.selectedSphereId
+  );
+  const closeModal = () => {
+    dispatch(setActiveModal(null));
+  };
+  const handleToggleSidebar = () => {
+    dispatch(toggleSidebar());
+  };
+  const clearSelection = () => {
+    dispatch(selectLayerId(null));
+    dispatch(selectSphereId(null));
+    dispatch(selectMarkerId(null));
+  };
+
+  return {
+    isSidebarOpen,
+    activeModal,
+    selectedSphereId,
+    closeModal,
+    handleToggleSidebar,
+    clearSelection,
   };
 };
 

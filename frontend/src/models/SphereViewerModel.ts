@@ -10,12 +10,13 @@ import { animateToMarker } from '../utils/animationUtils';
 import { sleep } from '../utils/sleepUtils';
 import { getNearestSpheres, getSphereDataRelative } from '../utils/sphereUtils';
 
-export class PanoramaViewerModel {
+export class SphereViewerModel {
   viewerInstance: Viewer | null = null;
   mapPlugin: MapPlugin | null = null;
   markersPlugin: MarkersPlugin | null = null;
 
   initializeViewer(container: HTMLDivElement, isDesktop: boolean) {
+    //
     this.viewerInstance = new Viewer({
       container: container,
       panorama: '',
@@ -147,7 +148,7 @@ export class PanoramaViewerModel {
     }
     this.viewerInstance
       .setPanorama(selectedSphere.imageUrl, { caption: selectedSphere.name })
-      .catch((error) => console.error('Error loading panorama:', error));
+      .catch((error) => console.error('Error loading sphere:', error));
   }
 
   handleMarkerChange(selectedMarker: MarkerData) {

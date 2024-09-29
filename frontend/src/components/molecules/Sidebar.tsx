@@ -1,6 +1,5 @@
 // import styled from 'styled-components';
 import { styled } from '@mui/system';
-import { TreeList } from './TreeList';
 
 const SidebarWrapper = styled('div')({
   display: 'flex',
@@ -22,13 +21,14 @@ const SidebarContainer = styled('div')<{ isOpen: boolean }>(({ isOpen }) => ({
 
 interface SidebarProps {
   isOpen: boolean;
+  content: React.ReactNode;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, content }) => {
   return (
     <SidebarWrapper>
       <SidebarContainer isOpen={isOpen} aria-hidden={!isOpen} role="region">
-        <TreeList />
+        {content}
       </SidebarContainer>
     </SidebarWrapper>
   );
