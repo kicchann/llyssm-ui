@@ -1,17 +1,16 @@
-import { Box, Button, Typography } from '@mui/material';
-import { styled } from '@mui/styles';
+import { Box, Button, styled, Typography } from '@mui/material';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useAuthRedirect } from '../../hooks/useAuthRedirect';
 import { setIsAuthenticated } from '../../store/slices/statusSlice';
 
-const StyledBox = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh',
-});
+const StyledBox = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
 
 export const SettingPage: React.FC = () => {
   const dispatch = useDispatch();

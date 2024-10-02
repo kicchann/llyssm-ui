@@ -5,18 +5,18 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setIsAuthenticated } from '../../store/slices/statusSlice';
 
-const StyledBox = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh',
-});
+const StyledBox = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
 
-const MailAndPassword = styled(TextField)({
-  marginBottom: 2,
-  width: '300px',
-});
+const MailAndPassword = styled(TextField)`
+  margin-bottom: 2;
+  width: 300px;
+`;
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');

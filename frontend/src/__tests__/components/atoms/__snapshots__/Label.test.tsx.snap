@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Label component snapshot 1`] = `
+<DocumentFragment>
+  <p
+    class="MuiTypography-root MuiTypography-body1 css-1edfpdg-MuiTypography-root"
+    style="color: red;"
+  >
+    Snapshot Test
+  </p>
+</DocumentFragment>
+`;

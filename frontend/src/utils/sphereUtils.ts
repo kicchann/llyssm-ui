@@ -1,4 +1,5 @@
-import { Orientation, SphereData } from '../types/map';
+import { Orientation } from '../types/marker';
+import { SphereData } from '../types/sphere';
 
 interface SphereDataRelative {
   sphereData: SphereData;

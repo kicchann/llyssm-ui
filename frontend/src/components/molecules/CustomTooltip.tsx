@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { MarkerData } from '../../types/map';
+import { MarkerData } from '../../types/marker';
 
 // スタイルの定義
 // CustomTooltipはあとで静的なHTMLとして描画するため、styled-componentsを使ってスタイルを定義

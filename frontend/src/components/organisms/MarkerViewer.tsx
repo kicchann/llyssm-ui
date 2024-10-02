@@ -1,28 +1,27 @@
-import { Box, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, styled, Typography } from '@mui/material';
 import React from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { useMarkerViewerViewModel } from '../../viewModels/MarkerViewerViewModel';
 
-const StyledCenterBox = styled(Box)({
-  position: 'relative',
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 8,
-});
+const StyledCenterBox = styled(Box)`
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8;
+`;
 
-const StyledH2Typography = styled(Typography)({
-  component: 'h2',
-  marginBottom: 2,
-  color: 'white',
-});
+const StyledH2Typography = styled(Typography)`
+  component: h2;
+  margin-bottom: 2;
+  color: white;
+`;
 
-const StyledTypography = styled(Typography)({
-  marginBottom: 2,
-  color: 'white',
-});
+const StyledTypography = styled(Typography)`
+  margin-bottom: 2;
+  color: white;
+`;
 
 export const MarkerViewer: React.FC = () => {
   const { markerData } = useMarkerViewerViewModel();

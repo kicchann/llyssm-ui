@@ -1,31 +1,30 @@
-import { Box } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, styled } from '@mui/material';
 import React, { useRef } from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { useLayerViewerViewModel } from '../../viewModels/LayerViewerViewModel';
 
-const StyledCenterBox = styled(Box)({
-  position: 'relative',
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
+const StyledCenterBox = styled(Box)`
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-const StyledSpherePinBox = styled(Box)({
-  position: 'absolute',
-  transform: 'translate(-50%, -50%)',
-  cursor: 'pointer',
-  width: '24px',
-  height: '24px',
-});
+const StyledSpherePinBox = styled(Box)`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+`;
 
-const StyledMainImg = styled('img')({
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain',
-  cursor: 'grab',
-});
+const StyledMainImg = styled('img')`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: grab;
+`;
 
 const wrapperProps = {
   disabled: false,

@@ -1,5 +1,4 @@
-import { Box } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, styled } from '@mui/material';
 import '@photo-sphere-viewer/core/index.css';
 import '@photo-sphere-viewer/map-plugin/index.css';
 import '@photo-sphere-viewer/markers-plugin/index.css';
@@ -10,18 +9,18 @@ interface SphereViewerProps {
   isDesktop: boolean;
   optionalContent?: React.ReactNode;
 }
-const StyledWholeBox = styled(Box)({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-});
+const StyledWholeBox = styled(Box)`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+`;
 
-const ViewerBox = styled(Box)({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-});
+const ViewerBox = styled(Box)`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
 
 export const SphereViewer: React.FC<SphereViewerProps> = ({
   isDesktop,

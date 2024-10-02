@@ -1,6 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, IconButton, Modal } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, IconButton, Modal, styled } from '@mui/material';
 import React, { useEffect } from 'react';
 
 interface ModalNodeProps {
@@ -9,26 +8,26 @@ interface ModalNodeProps {
   content: React.ReactNode;
 }
 
-const StyledModalBox = styled(Box)({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '85%',
-  maxWidth: '800px',
-  bgcolor: 'rgba(0, 0, 0, 0.2)',
-  p: 1,
-  maxHeight: '90vh',
-  overflowY: 'auto',
-  paddingTop: 36, // 閉じるボタン分のスペースを確保
-});
+const StyledModalBox = styled(Box)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 800px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-top: 36; /* 閉じるボタン分のスペースを確保 */
+`;
 
-const StyledIconButton = styled(IconButton)({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  color: 'white',
-});
+const StyledIconButton = styled(IconButton)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: white;
+`;
 
 export const ModalNode: React.FC<ModalNodeProps> = ({
   open,

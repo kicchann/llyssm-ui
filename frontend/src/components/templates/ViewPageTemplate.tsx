@@ -20,31 +20,31 @@ import { MarkerViewer } from '../organisms/MarkerViewer';
 import { SphereViewer } from '../organisms/SphereViewer';
 import { TreeList } from '../organisms/TreeList';
 
-const Layout = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100vh',
-});
+const Layout = styled('div')`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+`;
 
 //header以外をカバーするコンポーネント
-const WholeContent = styled('div')({
-  display: 'flex',
-  flex: 1,
-});
+const WholeContent = styled('div')`
+  display: flex;
+  flex: 1;
+`;
 
-const Content = styled('main')({
-  flex: 1,
-  display: 'flex',
-  height: '100%',
-  width: '100%',
-});
+const Content = styled('main')`
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+`;
 
-const OptionalContent = styled('div')({
-  position: 'absolute',
-  top: 10,
-  left: 10,
-  zIndex: 1000,
-});
+const OptionalContent = styled('div')`
+  position: absolute;
+  z-index: 1000;
+  top: 10px;
+  left: 10px;
+`;
 
 interface ViewPageTemplateProps {
   isDesktop: boolean;
@@ -87,23 +87,13 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   ) : (
     <LayerTileGrid />
   );
-  const content: React.ReactNode = isDesktop ? (
-    // PCの場合
+  const content: React.ReactNode = (
     <Layout>
       {/* ヘッダ */}
-      <Header />
+      {isDesktop ? <Header /> : <CompactHeader />}
       <WholeContent>
         {/* サイドバー */}
-        <Sidebar isOpen={isSidebarOpen} content={<TreeList />} />
-        {/* メインコンテンツ */}
-        <Content>{mainContent}</Content>
-      </WholeContent>
-    </Layout>
-  ) : (
-    <Layout>
-      {/* ヘッダ */}
-      <CompactHeader />
-      <WholeContent>
+        {isDesktop && <Sidebar isOpen={isSidebarOpen} content={<TreeList />} />}
         {/* メインコンテンツ */}
         <Content>{mainContent}</Content>
       </WholeContent>

@@ -1,21 +1,20 @@
 import { Layers } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Drawer, IconButton } from '@mui/material';
-import { styled } from '@mui/styles';
+import { Box, Drawer, IconButton, styled } from '@mui/material';
 import React, { useState } from 'react';
 
-const DrawerBox = styled(Box)({
-  width: 300,
-  padding: 16,
-  paddingTop: 48, // 閉じるボタン分のスペースを確保
-  position: 'relative',
-});
+const DrawerBox = styled(Box)`
+  width: 300px;
+  padding: 16px;
+  padding-top: 48px; /* 閉じるボタン分のスペースを確保 */
+  position: relative;
+`;
 
-const CloseButtonBox = styled(Box)({
-  position: 'absolute',
-  top: 8, // ボタンを右上に固定
-  right: 8,
-});
+const CloseButtonBox = styled(Box)`
+  position: absolute;
+  top: 8; /* ボタンを右上に固定 */
+  right: 8;
+`;
 
 interface DrawerNodeProps {
   content: React.ReactNode;

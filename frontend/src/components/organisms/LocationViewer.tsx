@@ -1,6 +1,6 @@
+import { styled } from '@mui/material';
 import React from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import styled from 'styled-components';
 import { GeoLocation } from '../../types/map';
 import { useLocationViewerViewModel } from '../../viewModels/LocationViewerViewModel';
 import { LocationTooltip } from '../molecules/LocationTooltip';

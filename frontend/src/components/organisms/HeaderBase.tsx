@@ -1,5 +1,4 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
-import { styled } from '@mui/styles';
+import { AppBar, styled, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 import { DrawerNode } from '../molecules/DrawerNode';
 import { MoreMenu } from '../molecules/SettingMenu';
@@ -9,11 +8,11 @@ interface HeaderBaseProps {
   isDesktop: boolean;
 }
 
-const HeaderBase: React.FC<HeaderBaseProps> = ({ isDesktop }) => {
-  const StyledTypography = styled(Typography)({
-    flexGrow: 1,
-  });
+const StyledTypography = styled(Typography)`
+  flex-grow: 1;
+`;
 
+const HeaderBase: React.FC<HeaderBaseProps> = ({ isDesktop }) => {
   return (
     <AppBar position="static">
       <Toolbar>

@@ -1,15 +1,19 @@
-import { Box, Stack, Typography } from '@mui/material';
-import { styled } from '@mui/styles';
+import { Box, Stack, styled, Typography } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import React from 'react';
 import { useTreeListViewModel } from '../../viewModels/TreeListViewModel';
 import { TreeNode } from '../molecules/TreeNode';
 
-const StyledSimpleTreeView = styled(SimpleTreeView)({
-  '& .Mui-selected': {
-    backgroundColor: 'transparent',
-  },
-});
+const StyledSimpleTreeView = styled(SimpleTreeView)`
+  & .Mui-selected {
+    background-color: transparent;
+  }
+`;
+
+const StyledBox = styled(Box)`
+  min-height: 352px;
+  min-width: 300px;
+`;
 
 export const TreeList: React.FC = () => {
   const {
@@ -29,7 +33,7 @@ export const TreeList: React.FC = () => {
 
   return (
     <Stack spacing={2}>
-      <Box sx={{ minHeight: 352, minWidth: 300 }}>
+      <StyledBox>
         <StyledSimpleTreeView onItemClick={handleItemClick}>
           {layerDataList.map((layer) => (
             <TreeNode
@@ -65,7 +69,7 @@ export const TreeList: React.FC = () => {
             </TreeNode>
           ))}
         </StyledSimpleTreeView>
-      </Box>
+      </StyledBox>
     </Stack>
   );
 };

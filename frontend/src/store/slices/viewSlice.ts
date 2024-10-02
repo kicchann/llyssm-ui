@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LayerData, MarkerData, SphereData } from '../../types/map';
+import { LayerData } from '../../types/layer';
+import { MarkerData } from '../../types/marker';
+import { SphereData } from '../../types/sphere';
 
 interface ViewerState {
   selectedLayerId: string | null; // 選択中のレイヤーID
