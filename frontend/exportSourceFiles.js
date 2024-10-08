@@ -31,7 +31,7 @@ function getTsFiles(dirPath, arrayOfFiles) {
 
 // 指定したファイルの内容を output.txt に書き出す
 function exportToText(outputPath) {
-  const srcDir = path.join(__dirname, 'src');
+  const srcDir = path.join(__dirname, 'src/hooks');
   const tsFiles = getTsFiles(srcDir);
 
   const output = tsFiles

@@ -89,43 +89,6 @@ export const ApiService = {
     return data;
   },
 
-  async fetchMarkers() {
-    // const response = await apiClient.get<MarkerData[]>('/markers');
-    // if (!response.ok) {
-    //   throw new Error('Failed to fetch markers');
-    // }
-    // sonct data = await response.data;
-    const data = [
-      {
-        id: 'marker01',
-        sphereId: 'sphere01',
-        name: 'Marker Name 01',
-        description: 'This is marker 01',
-        orientation: { yaw: 0, pitch: 0 },
-        imageUrl: '/images/image-800x600.png',
-        thumbnailUrl: '/images/image-160x120.png',
-        markerType: 'default',
-        createdAt: '2022-01-01T00:00:00',
-      },
-      {
-        id: 'marker02',
-        sphereId: 'sphere01',
-        name: 'Marker Name 02',
-        description: 'This is marker 02',
-        orientation: { yaw: 45, pitch: 10 },
-        imageUrl: '/images/image-800x600.png',
-        thumbnailUrl: '/images/image-160x120.png',
-        markerType: 'default',
-        createdAt: '2023-01-01T00:00:00',
-      },
-    ];
-    if (!isMarkerDataList(data)) {
-      throw new Error('invalid data format');
-    }
-    sleep(1000);
-    return data;
-  },
-
   async fetchSpheres() {
     // const response = await apiClient.get<SphereData[]>('/spheres');
     // if (!response.ok) {
@@ -168,6 +131,43 @@ export const ApiService = {
       },
     ];
     if (!isSphereDataList(data)) {
+      throw new Error('invalid data format');
+    }
+    sleep(1000);
+    return data;
+  },
+
+  async fetchMarkers() {
+    // const response = await apiClient.get<MarkerData[]>('/markers');
+    // if (!response.ok) {
+    //   throw new Error('Failed to fetch markers');
+    // }
+    // sonct data = await response.data;
+    const data = [
+      {
+        id: 'marker01',
+        sphereId: 'sphere01',
+        name: 'Marker Name 01',
+        description: 'This is marker 01',
+        orientation: { yaw: 0, pitch: 0 },
+        imageUrl: '/images/image-800x600.png',
+        thumbnailUrl: '/images/image-160x120.png',
+        markerType: 'default',
+        createdAt: '2022-01-01T00:00:00',
+      },
+      {
+        id: 'marker02',
+        sphereId: 'sphere01',
+        name: 'Marker Name 02',
+        description: 'This is marker 02',
+        orientation: { yaw: 45, pitch: 10 },
+        imageUrl: '/images/image-800x600.png',
+        thumbnailUrl: '/images/image-160x120.png',
+        markerType: 'default',
+        createdAt: '2023-01-01T00:00:00',
+      },
+    ];
+    if (!isMarkerDataList(data)) {
       throw new Error('invalid data format');
     }
     sleep(1000);

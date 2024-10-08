@@ -3,13 +3,13 @@ import { Box, Button, styled, Typography } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const StyledBox = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh',
-});
+const StyledBox = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
 
 export const IndexPage: React.FC = () => {
   return (

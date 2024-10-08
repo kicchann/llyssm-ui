@@ -1,7 +1,8 @@
+import { styled } from '@mui/material';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import React from 'react';
 
-interface TreeNodeProps {
+interface CustomTreeItemProps {
   id: string;
   label: string;
   children?: React.ReactNode;
@@ -9,7 +10,16 @@ interface TreeNodeProps {
   isSelected?: boolean;
 }
 
-export const TreeNode: React.FC<TreeNodeProps> = ({
+const StyledTreeItem = styled(TreeItem)<{ isSelected?: boolean }>`
+  & .MuiTreeItem-content {
+    padding: 4px 0;
+  }
+  color: black;
+  background-color: ${({ isSelected }) =>
+    isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent'};
+`;
+
+export const CustomTreeItem: React.FC<CustomTreeItemProps> = ({
   id,
   label,
   children,
@@ -17,19 +27,14 @@ export const TreeNode: React.FC<TreeNodeProps> = ({
   isSelected,
 }) => {
   return (
-    <TreeItem
+    <StyledTreeItem
+      isSelected={isSelected}
       key={id}
       itemId={id}
       label={label}
       onClick={(event) => onItemClick(event, id)}
-      sx={
-        {
-          backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
-          color: 'black',
-        }
-      }
     >
       {children}
-    </TreeItem>
+    </StyledTreeItem>
   );
 };

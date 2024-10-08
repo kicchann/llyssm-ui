@@ -1,5 +1,5 @@
 import { Position, Viewer } from '@photo-sphere-viewer/core';
-import { Orientation } from '../types/map';
+import { Orientation } from '../types/marker';
 
 export const getOrientation = (viewer: Viewer | null) => {
   if (!viewer) return { yaw: 0, pitch: 0 };

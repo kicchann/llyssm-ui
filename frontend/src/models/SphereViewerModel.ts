@@ -4,7 +4,10 @@ import { MapPlugin } from '@photo-sphere-viewer/map-plugin';
 import '@photo-sphere-viewer/map-plugin/index.css';
 import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import '@photo-sphere-viewer/markers-plugin/index.css';
-import { LayerData, MarkerData, SphereData } from '../types/map';
+import { LayerData } from '../types/layer';
+import { MarkerData } from '../types/marker';
+import { SphereData } from '../types/sphere';
+
 // 必要なユーティリティ関数をインポートまたは定義
 import { animateToMarker } from '../utils/animationUtils';
 import { sleep } from '../utils/sleepUtils';

@@ -7,14 +7,14 @@ interface YawPitchDisplayProps {
   pitch: number;
 }
 
-const StyledBox = styled(Box)({
-  position: 'absolute',
-  bottom: 45,
-  right: 10,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  padding: '5px 10px',
-  borderRadius: '5px',
-});
+const StyledBox = styled(Box)`
+  position: absolute;
+  bottom: 45;
+  right: 10;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 5px;
+`;
 
 export const YawPitchDisplay: React.FC<YawPitchDisplayProps> = ({
   yaw,

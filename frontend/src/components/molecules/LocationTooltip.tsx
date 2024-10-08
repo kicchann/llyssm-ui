@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
-import { LocationData } from '../../types/map';
+import { LocationData } from '../../types/location';
 import { getLocationIcon } from '../../utils/mapUtils';
 
 interface LocationTooltipProps {

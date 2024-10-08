@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { MarkerData } from '../../types/map';
+import { MarkerData } from '../../types/marker';
 
 // スタイルの定義
-// CustomTooltipはあとで静的なHTMLとして描画するため、styled-componentsを使ってスタイルを定義
+// MarkerTooltipはあとで静的なHTMLとして描画するため、styled-componentsを使ってスタイルを定義
 // MUIは使わない
 const StyledWrapper = styled.div`
   max-width: none;
@@ -30,15 +30,15 @@ const StyledText = styled.p`
   margin: 0;
 `;
 
-interface CustomTooltipProps {
+interface MarkerTooltipProps {
   markerData: MarkerData;
 }
 
-export const CustomTooltip: React.FC<CustomTooltipProps> = ({ markerData }) => {
+export const MarkerTooltip: React.FC<MarkerTooltipProps> = ({ markerData }) => {
   return (
     <>
       {/* Tooltip内容 */}
-      <StyledWrapper className="custom-tooltip">
+      <StyledWrapper className="marker-tooltip">
         <StyledImage src={markerData.thumbnailUrl} alt={markerData.name} />
         <StyledContent>
           <StyledTitle>{markerData.name}</StyledTitle>

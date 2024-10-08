@@ -14,7 +14,7 @@ import { RootState } from '../store/store';
 // model
 import { SphereViewerModel } from '../models/SphereViewerModel';
 // utils
-import { CustomTooltip } from '../components/molecules/CustomTooltip';
+import { MarkerTooltip } from '../components/molecules/MarkerTooltip';
 
 export const useSphereViewerViewModel = (isDesktop: boolean) => {
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ export const useSphereViewerViewModel = (isDesktop: boolean) => {
     return markerDataList.reduce(
       (contents, marker) => {
         const tooltipContent = ReactDOMServer.renderToStaticMarkup(
-          <CustomTooltip markerData={marker} key={marker.id} />
+          <MarkerTooltip markerData={marker} key={marker.id} />
         );
         contents[marker.id] = tooltipContent;
         return contents;

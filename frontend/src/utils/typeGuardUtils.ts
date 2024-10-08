@@ -1,14 +1,8 @@
 // src/utils/typeGuards.ts
-import {
-  GeoLocation,
-  ImageSize,
-  LayerData,
-  LocationData,
-  MarkerData,
-  Orientation,
-  Position,
-  SphereData,
-} from '../types/map';
+import { ImageSize, LayerData } from '../types/layer';
+import { GeoLocation, LocationData } from '../types/location';
+import { MarkerData, Orientation } from '../types/marker';
+import { Position, SphereData } from '../types/sphere';
 
 function isGeoLocation(data: any): data is GeoLocation {
   return (
