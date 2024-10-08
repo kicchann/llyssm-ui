@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { ApiService } from '../services/apiService';
 import { selectLocationDataList } from '../store/slices/mapSlice';
 import { setIsLoading } from '../store/slices/statusSlice';
-import { LocationData } from '../types/map';
+import { LocationData } from '../types/location';
 
 export const useFetchLocations = () => {
   const dispatch = useDispatch();

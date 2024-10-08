@@ -2,7 +2,7 @@ import { Box, Stack, styled, Typography } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import React from 'react';
 import { useTreeListViewModel } from '../../viewModels/TreeListViewModel';
-import { TreeNode } from '../molecules/TreeNode';
+import { CustomTreeItem } from '../molecules/CustomTreeItem';
 
 const StyledSimpleTreeView = styled(SimpleTreeView)`
   & .Mui-selected {
@@ -36,7 +36,7 @@ export const TreeList: React.FC = () => {
       <StyledBox>
         <StyledSimpleTreeView onItemClick={handleItemClick}>
           {layerDataList.map((layer) => (
-            <TreeNode
+            <CustomTreeItem
               key={layer.id}
               id={layer.id}
               label={layer.name}
@@ -46,7 +46,7 @@ export const TreeList: React.FC = () => {
               {sphereDataList
                 .filter((sphere) => sphere.layerId === layer.id)
                 .map((sphere) => (
-                  <TreeNode
+                  <CustomTreeItem
                     key={sphere.id}
                     id={sphere.id}
                     label={sphere.name}
@@ -56,7 +56,7 @@ export const TreeList: React.FC = () => {
                     {markerDataList
                       .filter((marker) => marker.sphereId === sphere.id)
                       .map((marker) => (
-                        <TreeNode
+                        <CustomTreeItem
                           key={marker.id}
                           id={marker.id}
                           label={marker.name}
@@ -64,9 +64,9 @@ export const TreeList: React.FC = () => {
                           onItemClick={handleItemClick}
                         />
                       ))}
-                  </TreeNode>
+                  </CustomTreeItem>
                 ))}
-            </TreeNode>
+            </CustomTreeItem>
           ))}
         </StyledSimpleTreeView>
       </StyledBox>

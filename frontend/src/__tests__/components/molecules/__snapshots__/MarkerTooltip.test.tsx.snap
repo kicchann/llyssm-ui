@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkerTooltip renders correctly with valid marker data 1`] = `
+<div>
+  <div
+    class="sc-blHHSb heJFIm marker-tooltip"
+  >
+    <img
+      alt="Sample Marker"
+      class="sc-gtLWhw kqDegA"
+      src="https://example.com/image.jpg"
+    />
+    <article
+      class="sc-egkSDF ikupuP"
+    >
+      <h2
+        class="sc-fAUdSK eMUwlG"
+      >
+        Sample Marker
+      </h2>
+      <p
+        class="sc-dntaoT bzATOg"
+      >
+        This is a sample marker description.
+      </p>
+    </article>
+  </div>
+</div>
+`;

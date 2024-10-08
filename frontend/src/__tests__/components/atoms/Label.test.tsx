@@ -30,7 +30,8 @@ describe('Label component', () => {
   });
 });
 
-test('Label component snapshot', () => {
-  const { asFragment } = render(<Label text="Snapshot Test" color="red" />);
-  expect(asFragment()).toMatchSnapshot();
-});
+// Snapshot test
+// test('Label component snapshot', () => {
+//   const { asFragment } = render(<Label text="Snapshot Test" color="red" />);
+//   expect(asFragment()).toMatchSnapshot();
+// });

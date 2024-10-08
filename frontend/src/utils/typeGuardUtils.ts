@@ -1,6 +1,6 @@
 // src/utils/typeGuards.ts
 import { ImageSize, LayerData } from '../types/layer';
-import { GeoLocation, LocationData } from '../types/map';
+import { GeoLocation, LocationData } from '../types/location';
 import { MarkerData, Orientation } from '../types/marker';
 import { Position, SphereData } from '../types/sphere';
 

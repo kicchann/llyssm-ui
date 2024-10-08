@@ -3,34 +3,22 @@ import React from 'react';
 // material-ui
 import { styled } from '@mui/material';
 // components
-import { Sidebar } from '../molecules/Sidebar';
-import { CompactHeader, Header } from '../organisms/HeaderBase';
 // hooks
 import { useFetchLayers } from '../../hooks/useFetchLayers';
 import { useFetchMarkers } from '../../hooks/useFetchMarkers';
 import { useFetchSpheres } from '../../hooks/useFetchSpheres';
 // store
 import { useViewPageTemplateViewModel } from '../../viewModels/ViewPageTemplateViewModel';
-import { LayerTileGridButton } from '../atoms/LayerTileGridButton';
-import { ToggleSidebarButton } from '../atoms/ToggleSidebarButton';
 import { ModalNode } from '../molecules/ModalNode';
+import { ShowLayerTileGridButton } from '../molecules/ShowLayerTileGridButton';
+import { Sidebar } from '../molecules/Sidebar';
+import { ToggleSidebarButton } from '../molecules/ToggleSidebarButton';
 import { LayerTileGrid } from '../organisms/LayerTileGrid';
 import { LayerViewer } from '../organisms/LayerViewer';
 import { MarkerViewer } from '../organisms/MarkerViewer';
 import { SphereViewer } from '../organisms/SphereViewer';
 import { TreeList } from '../organisms/TreeList';
-
-const Layout = styled('div')`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`;
-
-//header以外をカバーするコンポーネント
-const WholeContent = styled('div')`
-  display: flex;
-  flex: 1;
-`;
+import { PageLayout } from './PageLayout';
 
 const Content = styled('main')`
   display: flex;
@@ -72,14 +60,14 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   const optionalContent = isDesktop ? (
     <OptionalContent>
       <ToggleSidebarButton
-        isSidebarOpen={isSidebarOpen}
+        isOpen={isSidebarOpen}
         onToggle={handleToggleSidebar}
       />
-      <LayerTileGridButton onClick={clearSelection} />
+      <ShowLayerTileGridButton onClick={clearSelection} />
     </OptionalContent>
   ) : (
     <OptionalContent>
-      <LayerTileGridButton onClick={clearSelection} />
+      <ShowLayerTileGridButton onClick={clearSelection} />
     </OptionalContent>
   );
   const mainContent = selectedSphereId ? (
@@ -87,22 +75,16 @@ export const ViewPageTemplate: React.FC<ViewPageTemplateProps> = ({
   ) : (
     <LayerTileGrid />
   );
-  const content: React.ReactNode = (
-    <Layout>
-      {/* ヘッダ */}
-      {isDesktop ? <Header /> : <CompactHeader />}
-      <WholeContent>
+
+  return (
+    <>
+      {/* ページ全体のレイアウト */}
+      <PageLayout isDesktop={isDesktop}>
         {/* サイドバー */}
         {isDesktop && <Sidebar isOpen={isSidebarOpen} content={<TreeList />} />}
         {/* メインコンテンツ */}
         <Content>{mainContent}</Content>
-      </WholeContent>
-    </Layout>
-  );
-
-  return (
-    <>
-      {content}
+      </PageLayout>
       {/* レイヤーモーダルを表示 */}
       <ModalNode
         open={activeModal === 'layer'}

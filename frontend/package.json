@@ -36,7 +36,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "test": "jest",
+    "test": "jest --verbose",
     "test:watch": "jest --watch"
   },
   "eslintConfig": {
@@ -67,6 +67,7 @@
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.36.1",
     "globals": "^15.9.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",

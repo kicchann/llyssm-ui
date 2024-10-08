@@ -15,5 +15,5 @@ export const ViewPage: React.FC = () => {
     return <NotFoundPage />;
   }
 
-  return <ViewPageTemplate isDesktop={isDesktop} locationId={id ?? ''} />;
+  return <ViewPageTemplate isDesktop={isDesktop} locationId={id} />;
 };

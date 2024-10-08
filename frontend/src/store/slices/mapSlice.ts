@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { GeoLocation, LocationData } from '../../types/map';
+import { GeoLocation, LocationData } from '../../types/location';
 
 interface ViewerState {
   userGeoLocation: GeoLocation | null; // ユーザーの位置情報

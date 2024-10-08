@@ -1,21 +1,12 @@
-import { styled } from '@mui/material';
 import React from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import { GeoLocation } from '../../types/map';
+import { GeoLocation } from '../../types/location';
 import { useLocationViewerViewModel } from '../../viewModels/LocationViewerViewModel';
 import { LocationTooltip } from '../molecules/LocationTooltip';
+import { MapContainerWrapper } from '../molecules/MapContainerWrapper';
 
-const StyledMapContainer = styled(MapContainer)`
-  width: 100%;
-  height: 100%;
-`;
-
-// Base map tile:
-const maps = {
-  base: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  google: 'https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}',
-};
-
+// TODO: react-leaflet が ECMAScript Modules（ESM）を使用しているのに対して、Jest がデフォルトでそれを処理する設定になっていない。
+// そのため、Jest の設定ファイル（jest.config.js）に以下の設定を追加する必要がある。
+// 現時点ではこのコンポーネントはテストしないことにした。
 export const LocationViewer: React.FC = () => {
   const { userGeoLocation, locationDataList, handlePopupClick } =
     useLocationViewerViewModel();
@@ -26,15 +17,11 @@ export const LocationViewer: React.FC = () => {
   };
 
   return (
-    <StyledMapContainer
+    <MapContainerWrapper
       center={[geoLocation.latitude, geoLocation.longitude]}
       zoom={10}
+      mapType="base"
     >
-      <TileLayer
-        url={maps.base}
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-
       {locationDataList.map((location) => (
         <LocationTooltip
           key={location.id}
@@ -42,6 +29,6 @@ export const LocationViewer: React.FC = () => {
           onClick={() => handlePopupClick(location.id)}
         />
       ))}
-    </StyledMapContainer>
+    </MapContainerWrapper>
   );
 };

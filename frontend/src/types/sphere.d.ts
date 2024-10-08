@@ -1,4 +1,4 @@
-import { GeoLocation } from './map';
+import { GeoLocation } from './location';
 
 export interface Position {
   x: number;

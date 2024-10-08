@@ -1,6 +1,7 @@
-import { Card, CardContent, CardMedia, Grid2, Typography } from '@mui/material';
+import { Grid2 } from '@mui/material';
 import React from 'react';
 import { useLayerTileGridViewModel } from '../../viewModels/LayerTileGridViewModel';
+import { LayerTile } from '../molecules/LayerTile';
 
 export const LayerTileGrid: React.FC = () => {
   const { layerDataList, handleLayerClick } = useLayerTileGridViewModel();
@@ -13,23 +14,13 @@ export const LayerTileGrid: React.FC = () => {
     >
       {layerDataList.map((layer) => (
         <Grid2 key={layer.id}>
-          <Card
-            onClick={() => handleLayerClick(layer.id)}
-            sx={{ cursor: 'pointer' }}
-          >
-            <CardMedia
-              component="img"
-              height="140"
-              image={layer.imageUrl} // imageUrlを表示
-              alt={layer.name}
-            />
-            <CardContent>
-              <Typography variant="h6">{layer.name}</Typography>
-              <Typography variant="body2" color="textSecondary">
-                {`Size: ${layer.imageSize.width}x${layer.imageSize.height}`}
-              </Typography>
-            </CardContent>
-          </Card>
+          <LayerTile
+            id={layer.id}
+            name={layer.name}
+            imageUrl={layer.imageUrl}
+            imageSize={layer.imageSize}
+            onClick={handleLayerClick}
+          />
         </Grid2>
       ))}
     </Grid2>

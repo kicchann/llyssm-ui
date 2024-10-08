@@ -16,19 +16,20 @@ const StyledWholeBox = styled(Box)`
   display: flex;
 `;
 
-const ViewerBox = styled(Box)`
+const StyledSphereViewer = styled(Box)`
   position: relative;
   width: 100%;
   height: 100%;
 `;
 
+// 簡易なコンポーネントのため、テストは省略
 export const SphereViewer: React.FC<SphereViewerProps> = ({
   isDesktop,
   optionalContent,
 }) => {
   const { viewerRef } = useSphereViewerViewModel(isDesktop);
 
-  const content = <ViewerBox ref={viewerRef}></ViewerBox>;
+  const content = <StyledSphereViewer ref={viewerRef}></StyledSphereViewer>;
 
   return (
     <StyledWholeBox>

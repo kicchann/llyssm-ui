@@ -1,342 +1,257 @@
---- /workspaces/llyssm-ui/frontend/src/components/molecules/CustomTooltip.tsx ---
-import React from 'react';
-import styled from 'styled-components';
-import { MarkerData } from '../../types/marker';
+--- /workspaces/llyssm-ui/frontend/src/hooks/useAnimationFrame.ts ---
+import { useCallback, useEffect, useRef } from 'react';
 
-// スタイルの定義
-// CustomTooltipはあとで静的なHTMLとして描画するため、styled-componentsを使ってスタイルを定義
-// MUIは使わない
-const StyledWrapper = styled.div`
-  max-width: none;
-  padding: 0;
-  box-shadow: 0 0 0 2px white;
-`;
+export const useAnimationFrame = (isRunning: boolean, callback: () => void) => {
+  const reqIdRef = useRef<number | null>(null);
 
-const StyledImage = styled.img`
-  width: 100%;
-  border-radius: 4px 4px 0 0;
-  padding: 30;
-`;
+  const loop = useCallback(() => {
+    if (isRunning) {
+      reqIdRef.current = requestAnimationFrame(loop);
+      callback();
+    }
+  }, [isRunning, callback]);
 
-const StyledContent = styled.article`
-  margin: 1rem;
-  text-align: justify;
-`;
-
-const StyledTitle = styled.h2`
-  margin: 0;
-`;
-
-const StyledText = styled.p`
-  margin: 0;
-`;
-
-interface CustomTooltipProps {
-  markerData: MarkerData;
-}
-
-export const CustomTooltip: React.FC<CustomTooltipProps> = ({ markerData }) => {
-  return (
-    <>
-      {/* Tooltip内容 */}
-      <StyledWrapper className="custom-tooltip">
-        <StyledImage src={markerData.thumbnailUrl} alt={markerData.name} />
-        <StyledContent>
-          <StyledTitle>{markerData.name}</StyledTitle>
-          <StyledText>{markerData.description}</StyledText>
-        </StyledContent>
-      </StyledWrapper>
-    </>
-  );
-};
-
-
---- /workspaces/llyssm-ui/frontend/src/components/molecules/DrawerNode.tsx ---
-import { Layers } from '@mui/icons-material';
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, Drawer, IconButton, styled } from '@mui/material';
-import React, { useState } from 'react';
-
-const DrawerBox = styled(Box)`
-  width: 300px;
-  padding: 16px;
-  padding-top: 48px; /* 閉じるボタン分のスペースを確保 */
-  position: relative;
-`;
-
-const CloseButtonBox = styled(Box)`
-  position: absolute;
-  top: 8; /* ボタンを右上に固定 */
-  right: 8;
-`;
-
-interface DrawerNodeProps {
-  content: React.ReactNode;
-}
-
-export const DrawerNode: React.FC<DrawerNodeProps> = ({ content }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDrawer = (open: boolean) => () => {
-    setIsOpen(open);
-  };
-
-  return (
-    <>
-      {/* メニューを開くボタン */}
-      <IconButton onClick={toggleDrawer(true)} color="inherit">
-        <Layers />
-      </IconButton>
-
-      {/* 右からスライドするメニュー */}
-      <Drawer anchor="right" open={isOpen} onClose={toggleDrawer(false)}>
-        <DrawerBox role="presentation">
-          {/* 閉じるボタン */}
-          <CloseButtonBox>
-            <IconButton onClick={toggleDrawer(false)}>
-              <CloseIcon />
-            </IconButton>
-          </CloseButtonBox>
-          {content}
-        </DrawerBox>
-      </Drawer>
-    </>
-  );
-};
-
-
---- /workspaces/llyssm-ui/frontend/src/components/molecules/LocationTooltip.tsx ---
-import { Box } from '@mui/material';
-import 'leaflet/dist/leaflet.css';
-import React from 'react';
-import { Marker, Popup } from 'react-leaflet';
-import { LocationData } from '../../types/map';
-import { getLocationIcon } from '../../utils/mapUtils';
-
-interface LocationTooltipProps {
-  locationData: LocationData;
-  onClick: (event: React.MouseEvent, itemId: string) => void;
-}
-
-export const LocationTooltip: React.FC<LocationTooltipProps> = ({
-  locationData: data,
-  onClick: onPopupClick,
-}) => {
-  return (
-    <Marker
-      position={[data.geoLocation.latitude, data.geoLocation.longitude]}
-      icon={getLocationIcon(data.iconType)}
-    >
-      <Popup>
-        <Box onClick={(event) => onPopupClick(event, data.id)}>
-          <h3>{data.name}</h3>
-          <p>{data.description}</p>
-          <p>クリックで詳細ページへ</p>
-        </Box>
-      </Popup>
-    </Marker>
-  );
-};
-
-
---- /workspaces/llyssm-ui/frontend/src/components/molecules/ModalNode.tsx ---
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, IconButton, Modal, styled } from '@mui/material';
-import React, { useEffect } from 'react';
-
-interface ModalNodeProps {
-  open: boolean;
-  onClose: () => void;
-  content: React.ReactNode;
-}
-
-const StyledModalBox = styled(Box)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 85%;
-  max-width: 800px;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 8px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding-top: 36; /* 閉じるボタン分のスペースを確保 */
-`;
-
-const StyledIconButton = styled(IconButton)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: white;
-`;
-
-export const ModalNode: React.FC<ModalNodeProps> = ({
-  open,
-  onClose,
-  content,
-}) => {
-  // ESCキーでモーダルを閉じる
   useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+    if (isRunning) {
+      reqIdRef.current = requestAnimationFrame(loop);
+    }
+    return () => {
+      if (reqIdRef.current !== null) {
+        cancelAnimationFrame(reqIdRef.current);
       }
     };
-    document.addEventListener('keydown', handleEsc);
-
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-    };
-  }, [onClose]);
-
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="marker-modal-title"
-      aria-describedby="marker-modal-description"
-    >
-      <StyledModalBox>
-        <StyledIconButton onClick={onClose}>
-          <CloseIcon />
-        </StyledIconButton>
-        {content}
-      </StyledModalBox>
-    </Modal>
-  );
+  }, [loop]);
 };
 
 
---- /workspaces/llyssm-ui/frontend/src/components/molecules/SettingMenu.tsx ---
-import { MoreVert } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import React from 'react';
+--- /workspaces/llyssm-ui/frontend/src/hooks/useAuthRedirect.tsx ---
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { RootState } from '../store/store'; // ストアの型
 
-export const MoreMenu: React.FC = () => {
+export const useAuthRedirect = () => {
   const navigate = useNavigate();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.status.isAuthenticated
+  );
 
-  const handleSettingsClick = () => {
-    navigate('/setting');
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchLayers.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ApiService } from '../services/apiService';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectLayerDataList } from '../store/slices/viewSlice';
+
+export const useFetchLayers = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsLoading(true));
+    const fetchLayers = async () => {
+      try {
+        const data = await ApiService.fetchLayers();
+        dispatch(selectLayerDataList(data));
+      } catch (error) {
+        console.error('Error fetching layers:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+    fetchLayers();
+  }, [dispatch]);
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchLocations.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ApiService } from '../services/apiService';
+import { selectLocationDataList } from '../store/slices/mapSlice';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { LocationData } from '../types/location';
+
+export const useFetchLocations = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsLoading(true));
+    const fetchLocations = async () => {
+      try {
+        const data: LocationData[] = await ApiService.fetchLocations();
+        dispatch(selectLocationDataList(data));
+      } catch (error) {
+        console.error('Error fetching Locations:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+    fetchLocations();
+  }, [dispatch]);
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchMarkers.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ApiService } from '../services/apiService';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectMarkerDataList } from '../store/slices/viewSlice';
+
+export const useFetchMarkers = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsLoading(true));
+    const fetchMarkers = async () => {
+      try {
+        const data = await ApiService.fetchMarkers();
+        dispatch(selectMarkerDataList(data));
+      } catch (error) {
+        console.error('Error fetching markers:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+    fetchMarkers();
+  }, [dispatch]);
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchSignedUrl.ts ---
+import { useEffect, useState } from 'react';
+import { ApiService } from '../services/apiService'; // APIサービス
+
+export const useFetchSignedUrl = (fileId: string) => {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUrl = async () => {
+      try {
+        const url = await ApiService.getSignedUrl(fileId);
+        setSignedUrl(url);
+      } catch (err) {
+        setError('署名付きURLの取得に失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUrl();
+  }, [fileId]);
+
+  return { signedUrl, loading, error };
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchSpheres.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ApiService } from '../services/apiService';
+import { setIsLoading } from '../store/slices/statusSlice';
+import { selectSphereDataList } from '../store/slices/viewSlice';
+
+export const useFetchSpheres = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsLoading(true));
+    const fetchSpheres = async () => {
+      try {
+        const data = await ApiService.fetchSpheres();
+        dispatch(selectSphereDataList(data));
+      } catch (error) {
+        console.error('Error fetching spheres:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+    fetchSpheres();
+  }, [dispatch]);
+};
+
+
+--- /workspaces/llyssm-ui/frontend/src/hooks/useFetchUserGeoLocation.ts ---
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUserGeoLocation } from '../store/slices/mapSlice';
+import { setErrorMessage } from '../store/slices/statusSlice';
+
+export const useFetchUserGeoLocation = () => {
+  const dispatch = useDispatch();
+
+  const fetchUserGeoLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          dispatch(
+            setUserGeoLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            })
+          );
+        },
+        (error) => {
+          dispatch(setErrorMessage('現在位置の取得に失敗しました'));
+          console.error('Error retrieving location:', error);
+        }
+      );
+    } else {
+      dispatch(
+        setErrorMessage('Geolocationがこのブラウザでサポートされていません')
+      );
+      console.error('Geolocation is not supported by this browser.');
+    }
   };
 
-  return (
-    <IconButton
-      edge="start"
-      color="inherit"
-      aria-label="menu"
-      onClick={handleSettingsClick}
-    >
-      <MoreVert />
-    </IconButton>
-  );
+  useEffect(() => {
+    fetchUserGeoLocation();
+  }, []);
 };
 
 
---- /workspaces/llyssm-ui/frontend/src/components/molecules/Sidebar.tsx ---
-import { styled } from '@mui/material';
+--- /workspaces/llyssm-ui/frontend/src/hooks/useMediaQuery.ts ---
+import { useMediaQuery as muiUseMediaQuery, useTheme } from '@mui/material';
 
-const SidebarWrapper = styled('div')`
-  display: flex;
-  flex-direction: row;
-  position: relative;
-`;
-
-const SidebarContainer = styled('div')<{ isOpen: boolean }>`
-  overflow-y: auto;
-  background-color: #fff;
-  transition:
-    width 0.3s ease,
-    padding 0.3s ease;
-  box-shadow: ${({ isOpen }) =>
-    isOpen ? '2px 0 5px rgba(0, 0, 0, 0.1)' : 'none'};
-  width: ${({ isOpen }) => (isOpen ? 'var(--sidebar-width, 300px)' : '0')};
-  padding: ${({ isOpen }) => (isOpen ? '10px' : '0')};
-`;
-
-interface SidebarProps {
-  isOpen: boolean;
-  content: React.ReactNode;
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, content }) => {
-  return (
-    <SidebarWrapper>
-      <SidebarContainer isOpen={isOpen} aria-hidden={!isOpen} role="region">
-        {content}
-      </SidebarContainer>
-    </SidebarWrapper>
-  );
+// MUIのブレークポイントシステムに対応した定義
+export const mediaQuery = {
+  mobile: 'down', // スマートフォンサイズ
+  tablet: 'between', // タブレットサイズ
+  pc: 'up', // PCサイズ
 };
 
+// ブレークポイントに基づいてクエリを生成
+export const useMediaQuery = (queryKey: keyof typeof mediaQuery) => {
+  const theme = useTheme(); // MUIのテーマを取得
+  let query: string;
 
---- /workspaces/llyssm-ui/frontend/src/components/molecules/TreeNode.tsx ---
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import React from 'react';
+  // 必要に応じて適切なクエリを作成
+  switch (queryKey) {
+    case 'mobile':
+      query = theme.breakpoints.down('sm'); // スマートフォンサイズ（小さい画面）
+      break;
+    case 'tablet':
+      query = theme.breakpoints.between('sm', 'md'); // タブレットサイズ
+      break;
+    case 'pc':
+      query = theme.breakpoints.up('md'); // PCサイズ
+      break;
+    default:
+      throw new Error(`Invalid queryKey: ${queryKey}`);
+  }
 
-interface TreeNodeProps {
-  id: string;
-  label: string;
-  children?: React.ReactNode;
-  onItemClick: (event: React.SyntheticEvent, itemId: string) => void;
-  isSelected?: boolean;
-}
+  const matches = muiUseMediaQuery(query); // MUIのuseMediaQueryを使用
 
-export const TreeNode: React.FC<TreeNodeProps> = ({
-  id,
-  label,
-  children,
-  onItemClick,
-  isSelected,
-}) => {
-  return (
-    <TreeItem
-      key={id}
-      itemId={id}
-      label={label}
-      onClick={(event) => onItemClick(event, id)}
-      sx={
-        {
-          backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
-          color: 'black',
-        }
-      }
-    >
-      {children}
-    </TreeItem>
-  );
-};
-
-
---- /workspaces/llyssm-ui/frontend/src/components/molecules/YawPitchDisplay.tsx ---
-import { Box, styled } from '@mui/material';
-import React from 'react';
-import { Label } from '../atoms/Label';
-
-interface YawPitchDisplayProps {
-  yaw: number;
-  pitch: number;
-}
-
-const StyledBox = styled(Box)`
-  position: absolute;
-  bottom: 45;
-  right: 10;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 5px 10px;
-  border-radius: 5px;
-`;
-
-export const YawPitchDisplay: React.FC<YawPitchDisplayProps> = ({
-  yaw,
-  pitch,
-}) => {
-  return (
-    <StyledBox>
-      <Label text={`Yaw: ${yaw.toFixed(1)}°`} color="white" />
-      <Label text={`Pitch: ${pitch.toFixed(1)}°`} color="white" />
-    </StyledBox>
-  );
+  return matches; // true/falseを返す
 };
 
